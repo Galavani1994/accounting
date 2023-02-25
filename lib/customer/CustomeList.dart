@@ -1,4 +1,5 @@
 import 'package:accounting/customer/Customer.dart';
+import 'package:accounting/customer/CustomerMain.dart';
 import 'package:accounting/util/DatabaseHelper.dart';
 import 'package:flutter/material.dart';
 import 'package:quickalert/quickalert.dart';
@@ -86,7 +87,7 @@ class _CustomerListState extends State<CustomerList> {
                                                   context,
                                                   MaterialPageRoute(
                                                       builder: (context) =>
-                                                          CustomerEdit(
+                                                          CustomerMain(
                                                             customer: customer,
                                                           )));
                                             },
@@ -130,7 +131,7 @@ class _CustomerListState extends State<CustomerList> {
         backgroundColor: Colors.red[900],
         onPressed: () {
           Navigator.push(
-              context, MaterialPageRoute(builder: (context) => CustomerEdit()));
+              context, MaterialPageRoute(builder: (context) => CustomerMain()));
         },
         child: Icon(Icons.add),
       ),

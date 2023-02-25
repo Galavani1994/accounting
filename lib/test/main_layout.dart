@@ -1,4 +1,5 @@
 import 'package:accounting/customer/CustomeList.dart';
+import 'package:accounting/customer/CustomerMain.dart';
 import 'package:flutter/material.dart';
 
 import '../product/ProductList.dart';
@@ -69,10 +70,10 @@ class _MainLayoutState extends State<MainLayout> {
           showSelectedLabels: false,
           showUnselectedLabels: false,
           items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(icon: Icon(Icons.production_quantity_limits_sharp), label: 'Product'),
+            BottomNavigationBarItem(icon: Icon(Icons.production_quantity_limits_sharp), label: 'Product',),
             BottomNavigationBarItem(icon: Icon(Icons.person_add_alt_rounded), label: 'Customer'),
-            BottomNavigationBarItem(icon: Icon(Icons.wallet_giftcard), label: 'Wallet'),
-            BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+            BottomNavigationBarItem(icon: Icon(Icons.report), label: 'Report'),
+            BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Setting'),
           ],
         ),
       ),
@@ -86,7 +87,7 @@ class Page4 extends StatelessWidget {
       title: "page4",
       home: Scaffold(
         body: Center(
-          child: Text("page4"),
+          child: Text("comming soon setting"),
         ),
       ),
     );
@@ -100,7 +101,7 @@ class Page3 extends StatelessWidget {
       title: "page3",
       home: Scaffold(
         body: Center(
-          child: Text("page3"),
+          child: Text("comming soon reporting"),
         ),
       ),
     );
