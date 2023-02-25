@@ -12,7 +12,6 @@ class MyGrillApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-
       routes: {
         '/mainlayout': (context) => MainLayout(),
         '/page1': (context) => Page1(),
