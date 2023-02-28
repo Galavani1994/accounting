@@ -1,12 +1,8 @@
-import 'dart:js_util';
-
 import 'package:accounting/customer/Customer.dart';
 import 'package:accounting/customer/CustomerMain.dart';
 import 'package:accounting/util/DatabaseHelper.dart';
 import 'package:flutter/material.dart';
 import 'package:quickalert/quickalert.dart';
-
-import 'CustomerEdit.dart';
 
 class CustomerList extends StatefulWidget {
   const CustomerList({Key? key}) : super(key: key);
