@@ -3,6 +3,7 @@ import 'package:accounting/customer/CustomerEdit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../sale/SaleList.dart';
 import 'Customer.dart';
 
 class CustomerMain extends StatelessWidget {
@@ -18,6 +19,7 @@ class CustomerMain extends StatelessWidget {
       home: DefaultTabController(
         length: 2,
         child: Scaffold(
+          resizeToAvoidBottomInset: false,
           appBar: AppBar(
             bottom: TabBar(
               tabs: [
@@ -29,7 +31,7 @@ class CustomerMain extends StatelessWidget {
           body: TabBarView(
             children: [
               CustomerEdit(customer: customer,),
-              Icon(Icons.music_video),
+              SaleList(),
             ],
           ),
         ),

@@ -27,13 +27,12 @@ class CustomerEdit extends StatelessWidget {
         text: customer?.phoneNumber == null ? "" : "${customer?.phoneNumber}");
     TextEditingController descriptionController = TextEditingController(
         text: customer?.description == null ? "" : "${customer?.description}");
-    return Scaffold(
-
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
+    return Padding(
+      padding: const EdgeInsets.all(20.0),
+      child: SingleChildScrollView(
         child: Container(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: <Widget>[
               TextFormField(
                 controller: fullNameController,
