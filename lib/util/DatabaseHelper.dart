@@ -15,7 +15,7 @@ class DatabaseHelper {
     return await openDatabase(
         //open the database or create a database if there isn't any
         path,
-        version: 5,
+        version: 7,
         onCreate: _onCreate);
   }
 
@@ -37,6 +37,23 @@ class DatabaseHelper {
     description TEXT,
     createDate TEXT,
     updateDate TEXT
+    )
+    """);
+    await db.execute("""
+    CREATE TABLE SALE(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    description TEXT,
+    createDate TEXT,
+    updateDate TEXT,
+    productId INTEGER,
+    customerId INTEGER,
+    price INTEGER,
+    quantity REAL,
+    total TEXT,
+    discount INTEGER,
+    payment INTEGER,
+    FOREIGN KEY (productId) REFERENCES PRODUCT (id),
+    FOREIGN KEY (customerId) REFERENCES CUSTOMER (id)
     )
     """);
   }

@@ -16,7 +16,7 @@ class SaleService {
       DatabaseHelper helper = DatabaseHelper();
       final db = await helper.init(); //open database
       Future<int> res = db.insert(
-        "PRODUCT", item.toMap(), //toMap() function from MemoModel
+        "SALE", item.toMap(), //toMap() function from MemoModel
         conflictAlgorithm: ConflictAlgorithm
             .ignore, //ignores conflicts due to duplicate entries
       );
@@ -38,13 +38,13 @@ class SaleService {
         description: maps[i]['description'] as String,
         createDate: maps[i]['createDate'] as String,
         updateDate: maps[i]['updateDate'] as String,
-        productId: maps[i]['productId'] as Long,
+        productId: maps[i]['productId'] as int,
         productName: maps[i]['updateDate'] as String,
-        customerId: maps[i]['productId'] as Long,
+        customerId: maps[i]['productId'] as int,
         customerName: maps[i]['updateDate'] as String,
         price: maps[i]['id'] as int,
-        quantity: maps[i]['id'] as int,
-        total: maps[i]['id'] as Long,
+        quantity: maps[i]['id'] as double,
+        total: maps[i]['id'] as String,
       );
     });
   }

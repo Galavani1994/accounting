@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:accounting/customer/CustomeList.dart';
 import 'package:accounting/customer/Customer.dart';
 import 'package:accounting/customer/CustomerMain.dart';
@@ -20,29 +22,28 @@ class SaleEdit extends StatelessWidget {
   Sale? sale;
   TextEditingController quantityController = TextEditingController();
   TextEditingController feeController = TextEditingController();
+  TextEditingController discountController = TextEditingController();
+  TextEditingController paymentController = TextEditingController();
   TextEditingController totalController = TextEditingController(text: "0");
+  TextEditingController descriptionController = TextEditingController();
   TextEditingController dateTimeController = TextEditingController();
-  String? _selectedCustomer = "";
-  String? _selectedProduct = "";
-  List<String> _customers = ["محمد", "مهدی"];
-  List<String> _products = ["قارچ ارومیه", "قارچ خوی", "قارچ تبریز"];
+  var selectedCustomer;
+  var selectedProduct;
 
-  SaleEdit({this.sale}) {
-    _selectedCustomer = _customers[1];
-    _selectedProduct = _products[1];
+  SaleEdit({this.sale});
+  void showAlert(BuildContext context) {
+    QuickAlert.show(
+        context: context,
+        title: "",
+        text: "عملیات با موفقیت انجام شد",
+        type: QuickAlertType.success);
   }
+
+  SaleService saleService = SaleService();
 
   @override
   Widget build(BuildContext context) {
-    void showAlert() {
-      QuickAlert.show(
-          context: context,
-          title: "",
-          text: "عملیات با موفقیت انجام شد",
-          type: QuickAlertType.success);
-    }
 
-    SaleService saleService = SaleService();
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -53,6 +54,7 @@ class SaleEdit extends StatelessWidget {
               children: <Widget>[
                 SizedBox(height: 15),
                 TextField(
+                  keyboardType: TextInputType.none,
                   onTap: () => showDatePickerPersian(context),
                   controller: dateTimeController,
                   decoration: InputDecoration(
@@ -69,7 +71,13 @@ class SaleEdit extends StatelessWidget {
                 SizedBox(height: 15),
                 f_fee(),
                 SizedBox(height: 15),
+                f_discount(),
+                SizedBox(height: 20),
+                f_payment(),
+                SizedBox(height: 20),
                 f_total(),
+                SizedBox(height: 20),
+                f_description(),
                 SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -84,13 +92,7 @@ class SaleEdit extends StatelessWidget {
                         )),
                     ElevatedButton(
                         onPressed: () {
-                          Sale pr = Sale(
-                              id: sale?.id,
-                              description: "",
-                              createDate: DateTime.now().toString(),
-                              updateDate: DateTime.now().toString());
-                          saleService.addItem(pr);
-                          showAlert();
+                          save(context);
                         },
                         child: Text(
                           "ثبت",
@@ -112,7 +114,7 @@ class SaleEdit extends StatelessWidget {
     return DropdownSearch<Customer>(
       asyncItems: (String filter) => fetchCustomers,
       itemAsString: (Customer u) => u.fullName,
-      onChanged: (Customer? data) => print(data),
+      onChanged: (Customer? data) => selectedCustomer = data?.id,
       dropdownDecoratorProps: DropDownDecoratorProps(
         dropdownSearchDecoration: InputDecoration(
           labelText: "customer",
@@ -129,7 +131,7 @@ class SaleEdit extends StatelessWidget {
     return DropdownSearch<Product>(
       asyncItems: (String filter) => fetchProducts,
       itemAsString: (Product u) => u.fullName,
-      onChanged: (Product? data) => print(data),
+      onChanged: (Product? data) => selectedProduct = data?.id,
       dropdownDecoratorProps: DropDownDecoratorProps(
         dropdownSearchDecoration: InputDecoration(
           labelText: "product",
@@ -147,10 +149,10 @@ class SaleEdit extends StatelessWidget {
       decoration: const InputDecoration(
         border: OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(10))),
-        prefixIcon: const Icon(Icons.description),
         hintText: 'Enter your quantity',
         labelText: 'quantity',
       ),
+      keyboardType: TextInputType.number,
     );
   }
 
@@ -158,12 +160,42 @@ class SaleEdit extends StatelessWidget {
     return TextFormField(
       onChanged: (value) => {calculateTotal(value)},
       controller: feeController,
+      keyboardType: TextInputType.number,
       decoration: const InputDecoration(
         border: OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(10))),
-        prefixIcon: const Icon(Icons.description),
         hintText: 'Enter fee',
         labelText: 'fee',
+      ),
+      inputFormatters: [ThousandsSeparatorInputFormatter()],
+    );
+  }
+
+  Widget f_discount() {
+    return TextFormField(
+      onChanged: (value) => {calculateTotal(value)},
+      controller: discountController,
+      keyboardType: TextInputType.number,
+      decoration: const InputDecoration(
+        border: OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(10))),
+        hintText: 'Enter discount',
+        labelText: 'discount',
+      ),
+      inputFormatters: [ThousandsSeparatorInputFormatter()],
+    );
+  }
+
+  Widget f_payment() {
+    return TextFormField(
+      onChanged: (value) => {calculateTotal(value)},
+      controller: paymentController,
+      keyboardType: TextInputType.number,
+      decoration: const InputDecoration(
+        border: OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(10))),
+        hintText: 'Enter payment',
+        labelText: 'payment',
       ),
       inputFormatters: [ThousandsSeparatorInputFormatter()],
     );
@@ -182,18 +214,33 @@ class SaleEdit extends StatelessWidget {
     );
   }
 
+  Widget f_description() {
+    return TextFormField(
+      controller: descriptionController,
+      decoration: InputDecoration(
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10))),
+          labelText: "description"),
+      keyboardType: TextInputType.number,
+      inputFormatters: [ThousandsSeparatorInputFormatter()],
+    );
+  }
+
   void calculateTotal(String value) {
-    print(value);
-    if (value.isEmpty ||
-        quantityController.text.isEmpty ||
-        feeController.text.isEmpty) {
+    if (quantityController.text.isEmpty || feeController.text.isEmpty) {
       totalController.text = "0";
     } else {
       value.replaceAll(",", "");
       double quantity =
           double.parse(quantityController.text.replaceAll(",", ""));
       double fee = double.parse(feeController.text.replaceAll(",", ""));
-      int total = (quantity * fee).toInt();
+      int discount = discountController.text.isEmpty
+          ? 0
+          : int.parse(discountController.text.replaceAll(",", ""));
+      int payment = paymentController.text.isEmpty
+          ? 0
+          : int.parse(paymentController.text.replaceAll(",", ""));
+      int total = (quantity * fee).toInt() - discount - payment;
       totalController.text = formatAmount(total.toString());
     }
   }
@@ -223,5 +270,29 @@ class SaleEdit extends StatelessWidget {
       lastDate: Jalali(1450, 8),
     ).then((value) =>
         dateTimeController.text = value!.formatCompactDate().toString());
+  }
+  void save(BuildContext context){
+    Sale sl = Sale(
+      id: sale?.id,
+      description: descriptionController.text,
+      createDate: dateTimeController.text,
+      updateDate: DateTime.now().toString(),
+      productId: selectedProduct,
+      customerId: selectedCustomer,
+      quantity: double.parse(quantityController.text),
+      price: int.parse(
+          feeController.text.replaceAll(",", "")),
+      discount: discountController.text.isEmpty
+          ? 0
+          : int.parse(discountController.text
+          .replaceAll(",", "")),
+      payment: paymentController.text.isEmpty
+          ? 0
+          : int.parse(
+          paymentController.text.replaceAll(",", "")),
+      total: totalController.text.replaceAll(",", ""),
+    );
+    saleService.addItem(sl);
+    showAlert(context);
   }
 }
