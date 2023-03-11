@@ -1,5 +1,6 @@
 import 'package:accounting/customer/CustomeList.dart';
 import 'package:accounting/customer/CustomerMain.dart';
+import 'package:accounting/sale/SaleEdit.dart';
 import 'package:flutter/material.dart';
 
 import '../product/ProductList.dart';
@@ -77,6 +78,23 @@ class _MainLayoutState extends State<MainLayout> {
           ],
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+          backgroundColor: Colors.red[900],
+          onPressed: () {
+            showDialog(
+                context: context,
+                builder: (BuildContext context) => Dialog(
+                  shape: RoundedRectangleBorder(
+                      borderRadius:
+                      BorderRadius.circular(12.0)), //this right here
+                  child: Container(
+                      height: MediaQuery.of(context).size.height - 250,
+                      width: 400.0,
+                      child: SaleEdit()),
+                ));
+          },
+          child: Icon(Icons.wallet)),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }
