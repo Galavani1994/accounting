@@ -29,7 +29,7 @@ class _SaleListState extends State<SaleList> {
           builder: (BuildContext context, AsyncSnapshot<List<Sale>> snapshot) {
             if (!snapshot.hasData) {
               return Center(
-                child: Text(""),
+                child: Text("مشکل دیتا بیسی"),
               );
             }
             return snapshot.data!.isEmpty
@@ -90,27 +90,29 @@ class _SaleListState extends State<SaleList> {
                                       ],
                                     ),
                                   ),
-                                  /*Container(
+                                  Container(
                                     child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.end,
                                       children: [
                                         Text(
-                                          sale.customerName,
-                                          style: TextStyle(
-                                              fontFamily: "Vazir",
-                                              fontSize: 18),
-                                        ),
-                                        SizedBox(
-                                          height: 12,
-                                        ),
-                                        Text(
-                                          sale?.productId,
+                                          sale.createDate.toString(),
                                           style: TextStyle(
                                               fontFamily: "Vazir",
                                               fontSize: 14),
                                         ),
+                                        Text(
+                                            " تخفیف : "+(sale.discount==null?"0":sale.discount).toString()+" پرداختی : "+(sale.payment==null?"0":sale.payment).toString()+" مانده : "+(sale.total==null?"0":sale.total).toString(),
+                                          style: TextStyle(
+                                              fontFamily: "Vazir",
+                                              fontSize: 10),
+                                        ),
+                                        SizedBox(
+                                          height: 12,
+                                        ),
+
                                       ],
                                     ),
-                                  ),*/
+                                  ),
                                 ],
                               ),
                             ),

@@ -1,7 +1,7 @@
 import 'dart:ffi';
 
 class Sale {
-  final Long? id;
+  int? id;
   String? createDate;
   String? updateDate;
   int? productId;

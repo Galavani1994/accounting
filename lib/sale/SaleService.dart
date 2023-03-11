@@ -29,22 +29,22 @@ class SaleService {
     DatabaseHelper helper = DatabaseHelper();
     final db = await helper.init();
     final maps = await db
-        .query("PRODUCT"); //query all the rows in a table as an array of maps
+        .query("Sale"); //query all the rows in a table as an array of maps
 
     return List.generate(maps.length, (i) {
       //create a list of memos
       return Sale(
-        id: maps[i]['id'] as Long,
+        id: maps[i]['id'] as int,
         description: maps[i]['description'] as String,
         createDate: maps[i]['createDate'] as String,
         updateDate: maps[i]['updateDate'] as String,
         productId: maps[i]['productId'] as int,
-        productName: maps[i]['updateDate'] as String,
         customerId: maps[i]['productId'] as int,
-        customerName: maps[i]['updateDate'] as String,
-        price: maps[i]['id'] as int,
-        quantity: maps[i]['id'] as double,
-        total: maps[i]['id'] as String,
+        price: maps[i]['price'] as int,
+        quantity: maps[i]['quantity'] as double,
+        total: maps[i]['total'] as String,
+        discount: maps[i]['discount'] as int,
+        payment: maps[i]['payment'] as int,
       );
     });
   }
@@ -54,7 +54,7 @@ class SaleService {
     DatabaseHelper helper = DatabaseHelper();
     final db = await helper.init();
     int entityId = int.parse(id);
-    int result = await db.delete("PRODUCT", //table name
+    int result = await db.delete("SALE", //table name
         where: "id = ?",
         whereArgs: [entityId] // use whereArgs to avoid SQL injection
         );
@@ -68,7 +68,7 @@ class SaleService {
     final db = await helper.init();
 
     int result = await db!
-        .update("PRODUCT", item.toMap(), where: "id = ?", whereArgs: [id]);
+        .update("SALE", item.toMap(), where: "id = ?", whereArgs: [id]);
     return result;
   }
 }
