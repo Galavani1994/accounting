@@ -24,14 +24,19 @@ class SaleService {
     }
   }
 
-  Future<List<Sale>> fetchSales() async {
+  Future<List<Sale>> fetchSales(int customerId) async {
     //returns the memos as a list (array)
     DatabaseHelper helper = DatabaseHelper();
     final db = await helper.init();
-    final maps = await db
-        .query("Sale"); //query all the rows in a table as an array of maps
-
-    return List.generate(maps.length, (i) {
+    final maps;
+    if (customerId != null && customerId > 0) {
+      maps = await db
+          .query("Sale", where: "customerId=?", whereArgs: [customerId]);
+    } else {
+      //query all the rows in a table as an array of maps
+      maps = await db.query("Sale");
+    }
+    List<Sale> list = List.generate(maps.length, (i) {
       //create a list of memos
       return Sale(
         id: maps[i]['id'] as int,
@@ -39,7 +44,7 @@ class SaleService {
         createDate: maps[i]['createDate'] as String,
         updateDate: maps[i]['updateDate'] as String,
         productId: maps[i]['productId'] as int,
-        customerId: maps[i]['productId'] as int,
+        customerId: maps[i]['customerId'] as int,
         price: maps[i]['price'] as int,
         quantity: maps[i]['quantity'] as double,
         total: maps[i]['total'] as String,
@@ -47,6 +52,20 @@ class SaleService {
         payment: maps[i]['payment'] as int,
       );
     });
+    return list;
+  }
+
+  Future<String?> getTotalByCustomerId(int customerId) async {
+    DatabaseHelper helper = DatabaseHelper();
+    final db = await helper.init();
+    String query = "SELECT sum(total) as total FROM SALE WHERE customerId = ?";
+
+    var res = await db.rawQuery(query, [customerId.toString()]);
+    String? result = "";
+    List.generate(res.length, (i) {
+      result = (res[i]["total"] as int).toString();
+    });
+    return result;
   }
 
   Future<int> deleteSale(String id) async {

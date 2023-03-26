@@ -1,11 +1,5 @@
-import 'dart:ffi';
-
-import 'package:accounting/customer/CustomeList.dart';
 import 'package:accounting/customer/Customer.dart';
-import 'package:accounting/customer/CustomerMain.dart';
-import 'package:accounting/product/ProductList.dart';
 import 'package:accounting/product/ProductService.dart';
-import 'package:accounting/sale/SaleList.dart';
 import 'package:accounting/sale/SaleService.dart';
 import 'package:accounting/sale/sale.dart';
 import 'package:accounting/util/DatabaseHelper.dart';
@@ -13,7 +7,6 @@ import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:quickalert/quickalert.dart';
-import 'package:dropdown_search/dropdown_search.dart';
 
 import '../product/Product.dart';
 import '../util/thousandFormatter.dart';
@@ -43,7 +36,13 @@ class SaleEdit extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
+    this.dateTimeController.text= (sale?.createDate==null)?"":"${sale?.createDate}";
+    this.quantityController.text= (sale?.quantity==null)?"":"${sale?.quantity}";
+    this.feeController.text= (sale?.price==null)?"":"${sale?.price}";
+    this.discountController.text= (sale?.discount==null)?"0":"${sale?.discount}";
+    this.paymentController.text= (sale?.payment==null)?"":"${sale?.payment}";
+    this.totalController.text= (sale?.total==null)?"":"${sale?.total}";
+    this.descriptionController.text= (sale?.description==null)?"":"${sale?.description}";
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -221,8 +220,6 @@ class SaleEdit extends StatelessWidget {
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(10))),
           labelText: "description"),
-      keyboardType: TextInputType.number,
-      inputFormatters: [ThousandsSeparatorInputFormatter()],
     );
   }
 
