@@ -1,5 +1,6 @@
 import 'package:accounting/customer/CustomeList.dart';
 import 'package:accounting/customer/CustomerMain.dart';
+import 'package:accounting/sale/Add.dart';
 import 'package:accounting/sale/SaleEdit.dart';
 import 'package:flutter/material.dart';
 
@@ -90,7 +91,7 @@ class _MainLayoutState extends State<MainLayout> {
                   child: Container(
                       height: MediaQuery.of(context).size.height - 250,
                       width: 400.0,
-                      child: SaleEdit()),
+                      child: Add()),
                 ));
           },
           child: Icon(Icons.wallet)),

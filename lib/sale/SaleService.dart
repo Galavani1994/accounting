@@ -1,25 +1,23 @@
-import 'dart:ffi';
-
-import 'package:accounting/product/Product.dart';
 import 'package:accounting/sale/sale.dart';
 import 'package:accounting/util/DatabaseHelper.dart';
 import 'package:sqflite/sqflite.dart';
 
 class SaleService {
-  Future<Future<int>> addItem(Sale item) async {
+  Future<int?> addItem(Sale item) async {
     String itemId = item.id.toString();
     int id = itemId == "null" ? 0 : int.parse(itemId);
     if (id > 0) {
       return updateSale(id, item);
     } else {
-      //returns number of items inserted as an integer
-      DatabaseHelper helper = DatabaseHelper();
-      final db = await helper.init(); //open database
-      Future<int> res = db.insert(
-        "SALE", item.toMap(), //toMap() function from MemoModel
-        conflictAlgorithm: ConflictAlgorithm
-            .ignore, //ignores conflicts due to duplicate entries
-      );
+      Future<int> res;
+      try{
+        DatabaseHelper helper = DatabaseHelper();
+        final db = await helper.init(); //open database
+         res= db.insert("SALE", item.toMap(),);
+      }catch(e){
+        print(e.toString());
+        throw Exception();
+      }
       return res;
     }
   }
@@ -61,9 +59,11 @@ class SaleService {
     String query = "SELECT sum(total) as total FROM SALE WHERE customerId = ?";
 
     var res = await db.rawQuery(query, [customerId.toString()]);
-    String? result = "";
+    String? result = "0";
     List.generate(res.length, (i) {
-      result = (res[i]["total"] as int).toString();
+      if (res[i]["total"] != null) {
+        result = (res[i]["total"] as int).toString();
+      }
     });
     return result;
   }

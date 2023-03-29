@@ -1,26 +1,26 @@
-import 'package:accounting/customer/Customer.dart';
-import 'package:accounting/product/ProductService.dart';
-import 'package:accounting/sale/SaleService.dart';
 import 'package:accounting/sale/sale.dart';
-import 'package:accounting/util/DatabaseHelper.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:quickalert/quickalert.dart';
 
+import '../customer/Customer.dart';
 import '../product/Product.dart';
+import '../product/ProductService.dart';
+import '../util/DatabaseHelper.dart';
 import '../util/thousandFormatter.dart';
+import 'SaleService.dart';
 
-class SaleEdit extends StatefulWidget {
+class Add extends StatefulWidget {
   Sale? sale;
 
-  SaleEdit({this.sale});
+  Add({Key? key, Sale? sale}) : super(key: key);
 
   @override
-  State<SaleEdit> createState() => _SaleEditState();
+  State<Add> createState() => _AddState();
 }
 
-class _SaleEditState extends State<SaleEdit> {
+class _AddState extends State<Add> {
   TextEditingController quantityController = TextEditingController();
   TextEditingController feeController = TextEditingController();
   TextEditingController discountController = TextEditingController();
@@ -31,90 +31,75 @@ class _SaleEditState extends State<SaleEdit> {
   var selectedCustomer;
   var selectedProduct;
 
-  void showAlert(BuildContext context) {
+  /*void showAlert(BuildContext context) {
     QuickAlert.show(
         context: context,
         title: "",
         text: "عملیات با موفقیت انجام شد",
         type: QuickAlertType.success);
-  }
+  }*/
 
   SaleService saleService = SaleService();
 
   @override
   Widget build(BuildContext context) {
-    this.dateTimeController.text =
-        (widget.sale?.createDate == null) ? "" : "${widget.sale?.createDate}";
-    this.quantityController.text =
-        (widget.sale?.quantity == null) ? "" : "${widget.sale?.quantity}";
-    this.feeController.text =
-        (widget.sale?.price == null) ? "" : "${widget.sale?.price}";
-    this.discountController.text =
-        (widget.sale?.discount == null) ? "0" : "${widget.sale?.discount}";
-    this.paymentController.text =
-        (widget.sale?.payment == null) ? "" : "${widget.sale?.payment}";
-    this.totalController.text =
-        (widget.sale?.total == null) ? "" : "${widget.sale?.total}";
-    this.descriptionController.text =
-        (widget.sale?.description == null) ? "" : "${widget.sale?.description}";
+
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(20.0),
-        child: Container(
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                SizedBox(height: 15),
-                TextField(
-                  keyboardType: TextInputType.none,
-                  onTap: () => showDatePickerPersian(context),
-                  controller: dateTimeController,
-                  decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(10))),
-                      labelText: "date time"),
-                ),
-                SizedBox(height: 15),
-                f_customer(),
-                SizedBox(height: 15),
-                f_product(),
-                SizedBox(height: 15),
-                f_quantity(),
-                SizedBox(height: 15),
-                f_fee(),
-                SizedBox(height: 15),
-                f_discount(),
-                SizedBox(height: 20),
-                f_payment(),
-                SizedBox(height: 20),
-                f_total(),
-                SizedBox(height: 20),
-                f_description(),
-                SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context, rootNavigator: true).pop();
-                        },
-                        child: Text(
-                          "بازگشت",
-                          style: TextStyle(fontFamily: "Vazir"),
-                        )),
-                    ElevatedButton(
-                        onPressed: () {
-                          save(context);
-                        },
-                        child: Text(
-                          "ثبت",
-                          style: TextStyle(fontFamily: "Vazir"),
-                        )),
-                  ],
-                )
-              ],
-            ),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              SizedBox(height: 15),
+              TextField(
+                keyboardType: TextInputType.none,
+                onTap: () => showDatePickerPersian(context),
+                controller: dateTimeController,
+                decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                    labelText: "date time"),
+              ),
+              SizedBox(height: 15),
+              f_customer(),
+              SizedBox(height: 15),
+              f_product(),
+              SizedBox(height: 15),
+              f_quantity(),
+              SizedBox(height: 15),
+              f_fee(),
+              SizedBox(height: 15),
+              f_discount(),
+              SizedBox(height: 20),
+              f_payment(),
+              SizedBox(height: 20),
+              f_total(),
+              SizedBox(height: 20),
+              f_description(),
+              SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context, rootNavigator: true).pop();
+                      },
+                      child: Text(
+                        "بازگشت",
+                        style: TextStyle(fontFamily: "Vazir"),
+                      )),
+                  ElevatedButton(
+                      onPressed: () {
+                        save(context);
+                      },
+                      child: Text(
+                        "ثبت",
+                        style: TextStyle(fontFamily: "Vazir"),
+                      )),
+                ],
+              )
+            ],
           ),
         ),
       ),
@@ -274,13 +259,13 @@ class _SaleEditState extends State<SaleEdit> {
   }
 
   void showDatePickerPersian(BuildContext context) {
-   /* showPersianDatePicker(
+    showPersianDatePicker(
       context: context,
       initialDate: Jalali.fromDateTime(DateTime.now()),
       firstDate: Jalali(1385, 8),
       lastDate: Jalali(1450, 8),
     ).then((value) =>
-        dateTimeController.text = value!.formatCompactDate().toString());*/
+        dateTimeController.text = value!.formatCompactDate().toString());
   }
 
   void save(BuildContext context) {
@@ -308,6 +293,6 @@ class _SaleEditState extends State<SaleEdit> {
           : totalController.text.replaceAll(",", ""),
     );
     saleService.addItem(sl);
-    showAlert(context);
+    //showAlert(context);
   }
 }

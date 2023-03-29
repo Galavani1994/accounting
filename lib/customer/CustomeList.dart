@@ -95,6 +95,7 @@ class _CustomerListState extends State<CustomerList> {
                                   ),
                                   Container(
                                     child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.end,
                                       children: [
                                         Text(
                                           customer.fullName,

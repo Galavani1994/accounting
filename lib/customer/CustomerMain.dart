@@ -31,7 +31,7 @@ class CustomerMain extends StatelessWidget {
           body: TabBarView(
             children: [
               CustomerEdit(customer: customer,),
-              SaleList(customerId: customer?.id,),
+              SaleList(customer?.id,),
             ],
           ),
         ),

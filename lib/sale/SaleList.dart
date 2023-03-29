@@ -7,26 +7,37 @@ import 'package:quickalert/quickalert.dart';
 import 'SaleEdit.dart';
 import 'SaleService.dart';
 
-class SaleList extends StatelessWidget {
+class SaleList extends StatefulWidget {
   var customerId;
-  var totalByCustomerId="";
-  var formatter = NumberFormat('#,###,000');
+  SaleList(this.customerId);
 
-  SaleList({required this.customerId});
+
+
+  @override
+  State<SaleList> createState() => _SaleListState();
+}
+
+class _SaleListState extends State<SaleList> {
+  var totalByCustomerId = "";
+  var formatter = NumberFormat('#,###,000');
 
   @override
   Widget build(BuildContext context) {
     SaleService saleService = SaleService();
 
-   /* saleService
-        .getTotalByCustomerId(customerId)
-        .then((value) => totalByCustomerId=formatter.format(int.parse(value!)));*/
+    saleService.getTotalByCustomerId(widget.customerId).then((value) => {
+          setState(() {
+            totalByCustomerId = formatter.format(int.parse(value!));
+          })
+        });
+   /* saleService.getTotalByCustomerId(widget.customerId).then(
+        (value) => totalByCustomerId = formatter.format(int.parse(value!)));*/
     return Scaffold(
       body: Container(
         height: MediaQuery.of(context).size.height - 270,
         child: Center(
           child: FutureBuilder<List<Sale>>(
-            future: saleService.fetchSales(customerId!),
+            future: saleService.fetchSales(widget.customerId),
             builder:
                 (BuildContext context, AsyncSnapshot<List<Sale>> snapshot) {
               if (!snapshot.hasData) {
@@ -106,17 +117,22 @@ class SaleList extends StatelessWidget {
                                             " تخفیف : " +
                                                 (sale.discount == null
                                                         ? "0"
-                                                        : formatter.format(sale.discount))
+                                                        : formatter.format(
+                                                            sale.discount))
                                                     .toString() +
                                                 " پرداختی : " +
                                                 (sale.payment == null
                                                         ? "0"
-                                                        : formatter.format(sale.payment))
+                                                        : formatter.format(
+                                                            sale.payment))
                                                     .toString() +
                                                 " مانده : " +
                                                 (sale.total == null
                                                         ? "0"
-                                                        :formatter.format(double.parse(sale.total.toString())))
+                                                        : formatter.format(
+                                                            double.parse(sale
+                                                                .total
+                                                                .toString())))
                                                     .toString(),
                                             style: TextStyle(
                                                 fontFamily: "Vazir",
@@ -143,7 +159,10 @@ class SaleList extends StatelessWidget {
       bottomSheet: Container(
         height: 50,
         width: 200,
-        child: Text(totalByCustomerId),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(" مانده کل : "+totalByCustomerId,style:TextStyle(fontSize: 16),),
+        ),
         decoration: BoxDecoration(
           color: Colors.deepOrange,
           borderRadius: BorderRadius.circular(5),
