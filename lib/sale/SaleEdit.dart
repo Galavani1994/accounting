@@ -274,7 +274,7 @@ class _SaleEditState extends State<SaleEdit> {
   }
 
   void showDatePickerPersian(BuildContext context) {
-   /* showPersianDatePicker(
+    /* showPersianDatePicker(
       context: context,
       initialDate: Jalali.fromDateTime(DateTime.now()),
       firstDate: Jalali(1385, 8),
@@ -287,7 +287,9 @@ class _SaleEditState extends State<SaleEdit> {
     Sale sl = Sale(
       id: widget.sale?.id,
       description: descriptionController.text,
-      createDate: dateTimeController.text,
+      createDate: dateTimeController.text.isEmpty
+          ? DateTime.now().toString()
+          : dateTimeController.text,
       updateDate: DateTime.now().toString(),
       productId: selectedProduct,
       customerId: selectedCustomer,

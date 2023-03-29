@@ -19,6 +19,7 @@ class SaleList extends StatefulWidget {
 
 class _SaleListState extends State<SaleList> {
   var totalByCustomerId = "";
+  var paymentByCustomerId = "";
   var formatter = NumberFormat('#,###,000');
 
   @override
@@ -30,8 +31,11 @@ class _SaleListState extends State<SaleList> {
             totalByCustomerId = formatter.format(int.parse(value!));
           })
         });
-   /* saleService.getTotalByCustomerId(widget.customerId).then(
-        (value) => totalByCustomerId = formatter.format(int.parse(value!)));*/
+    saleService.getPaymentByCustomerId(widget.customerId).then((value) => {
+      setState(() {
+        paymentByCustomerId = formatter.format(int.parse(value!));
+      })
+    });
     return Scaffold(
       body: Container(
         height: MediaQuery.of(context).size.height - 270,
@@ -88,7 +92,7 @@ class _SaleListState extends State<SaleList> {
                                               icon: Icon(
                                                 Icons.delete,
                                               )),
-                                          IconButton(
+                                          /*IconButton(
                                               onPressed: () {
                                                 Navigator.push(
                                                     context,
@@ -98,7 +102,7 @@ class _SaleListState extends State<SaleList> {
                                                               sale: sale,
                                                             )));
                                               },
-                                              icon: Icon(Icons.edit)),
+                                              icon: Icon(Icons.edit)),*/
                                         ],
                                       ),
                                     ),
@@ -136,7 +140,7 @@ class _SaleListState extends State<SaleList> {
                                                     .toString(),
                                             style: TextStyle(
                                                 fontFamily: "Vazir",
-                                                fontSize: 10),
+                                                fontSize: 12),
                                           ),
                                           SizedBox(
                                             height: 12,
@@ -157,15 +161,22 @@ class _SaleListState extends State<SaleList> {
         ),
       ),
       bottomSheet: Container(
-        height: 50,
-        width: 200,
+        height: 60,
+        width: MediaQuery.of(context).size.width,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Text(" مانده کل : "+totalByCustomerId,style:TextStyle(fontSize: 16),),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(" مانده کل  : "+totalByCustomerId,style:TextStyle(fontSize: 14,fontWeight: FontWeight.bold),),
+              Text(" پرداختی : "+paymentByCustomerId,style:TextStyle(fontSize: 14,fontWeight: FontWeight.bold),),
+            ],
+          )
         ),
         decoration: BoxDecoration(
           color: Colors.deepOrange,
-          borderRadius: BorderRadius.circular(5),
+          borderRadius: BorderRadius.circular(2),
         ),
       ),
     );
