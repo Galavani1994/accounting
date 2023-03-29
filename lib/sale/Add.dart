@@ -31,14 +31,6 @@ class _AddState extends State<Add> {
   var selectedCustomer;
   var selectedProduct;
 
-  /*void showAlert(BuildContext context) {
-    QuickAlert.show(
-        context: context,
-        title: "",
-        text: "عملیات با موفقیت انجام شد",
-        type: QuickAlertType.success);
-  }*/
-
   SaleService saleService = SaleService();
 
   @override
@@ -293,6 +285,13 @@ class _AddState extends State<Add> {
           : totalController.text.replaceAll(",", ""),
     );
     saleService.addItem(sl);
-    //showAlert(context);
+    showAlert(context);
+  }
+  void showAlert(BuildContext context) {
+    QuickAlert.show(
+        context: context,
+        title: "",
+        text: "عملیات با موفقیت انجام شد",
+        type: QuickAlertType.success);
   }
 }
