@@ -27,7 +27,8 @@ class _AddState extends State<Add> {
   TextEditingController paymentController = TextEditingController();
   TextEditingController totalController = TextEditingController(text: "0");
   TextEditingController descriptionController = TextEditingController();
-  TextEditingController dateTimeController = TextEditingController();
+  TextEditingController dateTimeController = TextEditingController(text: Jalali.fromDateTime(DateTime.now()).formatCompactDate().toString());
+
   var selectedCustomer;
   var selectedProduct;
 
