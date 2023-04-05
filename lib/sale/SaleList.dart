@@ -1,4 +1,5 @@
 import 'package:accounting/product/Product.dart';
+import 'package:accounting/sale/SaleDetail.dart';
 import 'package:accounting/sale/sale.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -9,9 +10,8 @@ import 'SaleService.dart';
 
 class SaleList extends StatefulWidget {
   var customerId;
+
   SaleList(this.customerId);
-
-
 
   @override
   State<SaleList> createState() => _SaleListState();
@@ -32,10 +32,10 @@ class _SaleListState extends State<SaleList> {
           })
         });
     saleService.getPaymentByCustomerId(widget.customerId).then((value) => {
-      setState(() {
-        paymentByCustomerId = formatter.format(int.parse(value!));
-      })
-    });
+          setState(() {
+            paymentByCustomerId = formatter.format(int.parse(value!));
+          })
+        });
     return Scaffold(
       body: Container(
         height: MediaQuery.of(context).size.height - 270,
@@ -61,6 +61,19 @@ class _SaleListState extends State<SaleList> {
                         return Center(
                           child: Card(
                             child: ListTile(
+                              onTap: () {
+                                showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) => Dialog(
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                          BorderRadius.circular(12.0)), //this right here
+                                      child: Container(
+                                          height: 300,
+                                          width: 300.0,
+                                          child: SaleDetail(entity: sale,)),
+                                    ));
+                              },
                               title: Container(
                                 child: Row(
                                   mainAxisAlignment:
@@ -164,16 +177,21 @@ class _SaleListState extends State<SaleList> {
         height: 60,
         width: MediaQuery.of(context).size.width,
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(" مانده کل  : "+totalByCustomerId,style:TextStyle(fontSize: 14,fontWeight: FontWeight.bold),),
-              Text(" پرداختی : "+paymentByCustomerId,style:TextStyle(fontSize: 14,fontWeight: FontWeight.bold),),
-            ],
-          )
-        ),
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  " مانده کل  : " + totalByCustomerId,
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  " پرداختی : " + paymentByCustomerId,
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                ),
+              ],
+            )),
         decoration: BoxDecoration(
           color: Colors.deepOrange,
           borderRadius: BorderRadius.circular(2),

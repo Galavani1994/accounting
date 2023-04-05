@@ -34,14 +34,14 @@ class SaleService {
     if (customerId != null && customerId > 0) {
       try {
         maps = await db
-            .query("Sale", where: "customerId=?", whereArgs: [customerId]);
+            .query("Sale", where: "customerId=?", whereArgs: [customerId],orderBy: "createDate DESC");
         list = generateList(maps);
       } catch (ex) {
         print(ex.toString());
       }
     } else {
       try {
-        maps = await db.query("Sale");
+        maps = await db.query("Sale",orderBy: "createDate DESC");
         list = generateList(maps);
       } catch (ex) {
         print(ex.toString());
@@ -87,6 +87,36 @@ class SaleService {
     List.generate(res.length, (i) {
       if (res[i]["balance"] != null) {
         result = (res[i]["balance"] as int).toString();
+      }
+    });
+    return result;
+  }
+
+  Future<String?> getCustomerFullNameById(int? customerId) async {
+    DatabaseHelper helper = DatabaseHelper();
+    final db = await helper.init();
+    String query = "select fullName from CUSTOMER where id=?";
+
+    var res = await db.rawQuery(query, [customerId.toString()]);
+    String? result = "";
+    List.generate(res.length, (i) {
+      if (res[i]["fullName"] != null) {
+        result = res[i]["fullName"].toString();
+      }
+    });
+    return result;
+  }
+
+  Future<String?> getProductNameById(int? productId) async {
+    DatabaseHelper helper = DatabaseHelper();
+    final db = await helper.init();
+    String query = "select fullName from PRODUCT where id=?";
+
+    var res = await db.rawQuery(query, [productId.toString()]);
+    String? result = "";
+    List.generate(res.length, (i) {
+      if (res[i]["fullName"] != null) {
+        result = res[i]["fullName"].toString();
       }
     });
     return result;

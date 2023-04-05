@@ -286,6 +286,7 @@ class _AddState extends State<Add> {
     );
     saleService.addItem(sl);
     showAlert(context);
+    FocusScope.of(context).unfocus();
   }
   void showAlert(BuildContext context) {
     QuickAlert.show(
