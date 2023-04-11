@@ -39,61 +39,52 @@ class ProductEdit extends StatelessWidget {
         padding: const EdgeInsets.all(20.0),
         child: Container(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              TextFormField(
-                controller: fullNameController,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(10))),
-                  prefixIcon: const Icon(Icons.person),
-                  hintText: 'Enter your product name',
-                  labelText: 'ProductName',
+              Directionality(
+                textDirection: TextDirection.rtl,
+                child: TextFormField(
+                  controller: fullNameController,
+                  textDirection: TextDirection.rtl,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                    prefixIcon: const Icon(Icons.person),
+                    hintText: 'عنوان محصول خود را وارد کنید',
+                    labelText: 'نام محصول',
+                  ),
                 ),
               ),
               SizedBox(height: 15),
-              TextFormField(
-                controller: descriptionController,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(10))),
-                  prefixIcon: const Icon(Icons.description),
-                  hintText: 'Enter your description',
-                  labelText: 'Description',
+              Directionality(
+                textDirection: TextDirection.rtl,
+                child: TextFormField(
+                  controller: descriptionController,
+                  textDirection: TextDirection.rtl,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                    prefixIcon: Icon(Icons.description),
+                    hintText: 'شرح محصول',
+                    labelText: 'توضیحات',
+                  ),
                 ),
               ),
+
               SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const ProductList()));
-                      },
-                      child: Text(
-                        "بازگشت",
-                        style: TextStyle(fontFamily: "Vazir"),
-                      )),
-                  ElevatedButton(
-                      onPressed: () {
-                        Product pr = Product(
-                            id: product?.id,
-                            fullName: fullNameController.text,
-                            description: descriptionController.text,
-                            createDate: DateTime.now().toString(),
-                            updateDate: DateTime.now().toString());
-                        productService.addItem(pr);
-                        showAlert();
-                      },
-                      child: Text(
-                        "ثبت",
-                        style: TextStyle(fontFamily: "Vazir"),
-                      )),
-                ],
-              )
+              ElevatedButton(
+                  child: Text("ثبت", style: TextStyle(fontFamily: "Vazir"),),
+                  onPressed: () {
+                    Product pr = Product(
+                        id: product?.id,
+                        fullName: fullNameController.text,
+                        description: descriptionController.text,
+                        createDate: DateTime.now().toString(),
+                        updateDate: DateTime.now().toString());
+                    productService.addItem(pr);
+                    showAlert();
+                  },),
+
             ],
           ),
         ),

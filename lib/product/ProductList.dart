@@ -22,6 +22,21 @@ class _ProductListState extends State<ProductList> {
     ProductService productService = ProductService();
     return Scaffold(
       appBar: AppBar(
+        bottom: PreferredSize(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              IconButton(
+                icon: Icon(Icons.add_box_outlined,size: 30,),
+                onPressed: () {
+                  Navigator.push(
+                      context, MaterialPageRoute(builder: (context) => ProductEdit()));
+                },
+              ),
+            ],
+          ),
+          preferredSize: Size.fromHeight(30.0),
+        ),
         title: Text(
           "لیست کالا",
           style: TextStyle(fontFamily: "Vazir"),
@@ -125,14 +140,6 @@ class _ProductListState extends State<ProductList> {
                   );
           },
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.red[900],
-        onPressed: () {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => ProductEdit()));
-        },
-        child: Icon(Icons.add),
       ),
     );
   }

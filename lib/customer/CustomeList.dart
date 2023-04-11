@@ -21,6 +21,21 @@ class _CustomerListState extends State<CustomerList> {
     DatabaseHelper dbHelper = DatabaseHelper();
     return Scaffold(
       appBar: AppBar(
+        bottom: PreferredSize(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              IconButton(
+                icon: Icon(Icons.add_box_outlined,size: 30,),
+                onPressed: () {
+                  Navigator.push(
+                      context, MaterialPageRoute(builder: (context) => CustomerMain()));
+                },
+              ),
+            ],
+          ),
+          preferredSize: Size.fromHeight(30.0),
+        ),
         title: Text(
           "لیست مشتریان",
           style: TextStyle(fontFamily: "Vazir"),
@@ -125,14 +140,6 @@ class _CustomerListState extends State<CustomerList> {
                   );
           },
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.red[900],
-        onPressed: () {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => CustomerMain()));
-        },
-        child: Icon(Icons.add),
       ),
     );
   }
