@@ -12,15 +12,9 @@ class MyGrillApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-
       debugShowCheckedModeBanner: false,
       routes: {
         '/mainlayout': (context) => MainLayout(),
-        '/page1': (context) => Page1(),
-        '/page2': (context) => Page1(),
-        '/page3': (context) => Page1(),
-        '/page4': (context) => Page1(),
-
       },
       initialRoute: '/mainlayout',
     );

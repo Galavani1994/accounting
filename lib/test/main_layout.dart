@@ -1,7 +1,7 @@
 import 'package:accounting/customer/CustomeList.dart';
-import 'package:accounting/customer/CustomerMain.dart';
+import 'package:accounting/report/repot.dart';
 import 'package:accounting/sale/Add.dart';
-import 'package:accounting/sale/SaleEdit.dart';
+import 'package:accounting/setting/setting.dart';
 import 'package:flutter/material.dart';
 
 import '../product/ProductList.dart';
@@ -12,7 +12,7 @@ class MainLayout extends StatefulWidget {
 }
 
 class _MainLayoutState extends State<MainLayout> {
-  int _currentIndex = 0;
+  int _currentIndex = 2;
 
   final _page1 = GlobalKey<NavigatorState>();
   final _page2 = GlobalKey<NavigatorState>();
@@ -43,14 +43,14 @@ class _MainLayoutState extends State<MainLayout> {
             key: _page3,
             onGenerateRoute: (route) => MaterialPageRoute(
               settings: route,
-              builder: (context) => Page3(),
+              builder: (context) => Report(),
             ),
           ),
           Navigator(
             key: _page4,
             onGenerateRoute: (route) => MaterialPageRoute(
               settings: route,
-              builder: (context) => Page4(),
+              builder: (context) => Setting(),
             ),
           ),
         ],
@@ -69,13 +69,13 @@ class _MainLayoutState extends State<MainLayout> {
           type: BottomNavigationBarType.fixed,
           selectedItemColor: Colors.red[900],
           unselectedItemColor: Colors.grey,
-          showSelectedLabels: false,
-          showUnselectedLabels: false,
+          showSelectedLabels: true,
+          showUnselectedLabels: true,
           items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(icon: Icon(Icons.production_quantity_limits_sharp), label: 'Product',),
-            BottomNavigationBarItem(icon: Icon(Icons.person_add_alt_rounded), label: 'Customer'),
-            BottomNavigationBarItem(icon: Icon(Icons.report), label: 'Report'),
-            BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Setting'),
+            BottomNavigationBarItem(icon: Icon(Icons.production_quantity_limits_sharp), label: 'محصولات',),
+            BottomNavigationBarItem(icon: Icon(Icons.person_add_alt_rounded), label: 'مشتریان'),
+            BottomNavigationBarItem(icon: Icon(Icons.report), label: 'گزارشات'),
+            BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'تنظیمات'),
           ],
         ),
       ),
@@ -99,58 +99,6 @@ class _MainLayoutState extends State<MainLayout> {
     );
   }
 }
-class Page4 extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: "page4",
-      home: Scaffold(
-        body: Center(
-          child: Text("comming soon setting"),
-        ),
-      ),
-    );
-  }
-}
 
-class Page3 extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: "page3",
-      home: Scaffold(
-        body: Center(
-          child: Text("comming soon reporting"),
-        ),
-      ),
-    );
-  }
-}
 
-class Page2 extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: "page2",
-      home: Scaffold(
-        body: Center(
-          child: Text("page2"),
-        ),
-      ),
-    );
-  }
-}
 
-class Page1 extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: "page1",
-      home: Scaffold(
-        body: Center(
-          child: Text("page11111111111111"),
-        ),
-      ),
-    );
-  }
-}

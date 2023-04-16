@@ -25,7 +25,7 @@ class SaleService {
     }
   }
 
-  Future<List<Sale>> fetchSales(int customerId) async {
+  Future<List<Sale>> fetchSales(int? customerId) async {
     //returns the memos as a list (array)
     DatabaseHelper helper = DatabaseHelper();
     final db = await helper.init();
@@ -70,7 +70,7 @@ class SaleService {
         );
       });
 
-  Future<String?> getTotalByCustomerId(int customerId) async {
+  Future<String?> getTotalByCustomerId(int? customerId) async {
     DatabaseHelper helper = DatabaseHelper();
     final db = await helper.init();
     String query = """
@@ -122,7 +122,7 @@ class SaleService {
     return result;
   }
 
-  Future<String?> getPaymentByCustomerId(int customerId) async {
+  Future<String?> getPaymentByCustomerId(int? customerId) async {
     DatabaseHelper helper = DatabaseHelper();
     final db = await helper.init();
     String query = "select sum(payment) as payment from sale where customerid=?";

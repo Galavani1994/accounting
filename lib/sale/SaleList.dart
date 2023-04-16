@@ -1,3 +1,4 @@
+import 'package:accounting/customer/Customer.dart';
 import 'package:accounting/product/Product.dart';
 import 'package:accounting/sale/SaleDetail.dart';
 import 'package:accounting/sale/sale.dart';
@@ -9,9 +10,9 @@ import 'SaleEdit.dart';
 import 'SaleService.dart';
 
 class SaleList extends StatefulWidget {
-  var customerId;
+  Customer customer;
 
-  SaleList(this.customerId);
+  SaleList(this.customer);
 
   @override
   State<SaleList> createState() => _SaleListState();
@@ -26,22 +27,27 @@ class _SaleListState extends State<SaleList> {
   Widget build(BuildContext context) {
     SaleService saleService = SaleService();
 
-    saleService.getTotalByCustomerId(widget.customerId).then((value) => {
+    saleService.getTotalByCustomerId(widget.customer.id).then((value) => {
           setState(() {
             totalByCustomerId = formatter.format(int.parse(value!));
           })
         });
-    saleService.getPaymentByCustomerId(widget.customerId).then((value) => {
+    saleService.getPaymentByCustomerId(widget.customer.id).then((value) => {
           setState(() {
             paymentByCustomerId = formatter.format(int.parse(value!));
           })
         });
     return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'صورتحساب' + '  ' + widget.customer.fullName),
+        centerTitle: true,
+      ),
       body: Container(
         height: MediaQuery.of(context).size.height - 270,
         child: Center(
           child: FutureBuilder<List<Sale>>(
-            future: saleService.fetchSales(widget.customerId),
+            future: saleService.fetchSales(widget.customer.id),
             builder:
                 (BuildContext context, AsyncSnapshot<List<Sale>> snapshot) {
               if (!snapshot.hasData) {
@@ -65,14 +71,17 @@ class _SaleListState extends State<SaleList> {
                                 showDialog(
                                     context: context,
                                     builder: (BuildContext context) => Dialog(
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                          BorderRadius.circular(12.0)), //this right here
-                                      child: Container(
-                                          height: 300,
-                                          width: 300.0,
-                                          child: SaleDetail(entity: sale,)),
-                                    ));
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(12.0)),
+                                          //this right here
+                                          child: Container(
+                                              height: 300,
+                                              width: 300.0,
+                                              child: SaleDetail(
+                                                entity: sale,
+                                              )),
+                                        ));
                               },
                               title: Container(
                                 child: Row(
