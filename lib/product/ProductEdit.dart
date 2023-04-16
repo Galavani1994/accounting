@@ -27,15 +27,12 @@ class ProductEdit extends StatelessWidget {
         text: product?.fullName == null ? "" : "${product?.fullName}");
     TextEditingController descriptionController = TextEditingController(
         text: product?.description == null ? "" : "${product?.description}");
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: WillPopScope(
-        onWillPop: () async{
-          print('i am here');
-          Navigator.push(context, MaterialPageRoute(builder: (context) => ProductList()));
-          return true;
-        },
-        child: Scaffold(
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => ProductList()));
+        return true;
+      },
+      child: Scaffold(
           appBar: AppBar(
             title: Text(
               "محصول",
@@ -100,7 +97,6 @@ class ProductEdit extends StatelessWidget {
               ),
             ),
           ),
-        ),
       ),
     );
   }

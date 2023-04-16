@@ -21,92 +21,92 @@ class _ProductListState extends State<ProductList> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        appBar: AppBar(
-          bottom: PreferredSize(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                IconButton(
-                  icon: Icon(Icons.add_box_outlined,size: 30,),
-                  onPressed: () {
-                    Navigator.push(
-                        context, MaterialPageRoute(builder: (context) => ProductEdit()));
-                  },
-                ),
-              ],
+          appBar: AppBar(
+            bottom: PreferredSize(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.add_box_outlined,size: 30,),
+                    onPressed: () {
+                      Navigator.push(
+                          context, MaterialPageRoute(builder: (context) => ProductEdit()));
+                    },
+                  ),
+                ],
+              ),
+              preferredSize: Size.fromHeight(30.0),
             ),
-            preferredSize: Size.fromHeight(30.0),
+            title: Text(
+              "لیست محصولات",
+              style: TextStyle(fontFamily: "Vazir"),
+            ),
+            centerTitle: true,
           ),
-          title: Text(
-            "لیست محصولات",
-            style: TextStyle(fontFamily: "Vazir"),
-          ),
-          centerTitle: true,
-        ),
-        body: Center(
-          child: FutureBuilder<List<Product>>(
-            future: productService.fetchProducts(),
-            builder:
-                (BuildContext context, AsyncSnapshot<List<Product>> snapshot) {
-              if (!snapshot.hasData) {
-                return Center(
-                  child: Text(""),
-                );
-              }
-              return snapshot.data!.isEmpty
-                  ? Center(
-                      child: Text(
-                        "دیتایی برای نمایش وجود ندارد",
-                        style: TextStyle(fontFamily: "Vazir"),
-                      ),
-                    )
-                  : ListView(
-                      children: snapshot.data!.map((product) {
-                        return GestureDetector(
-                          onLongPress: () {
-                            _showPopupMenu(context, product, productService);
-                          },
-                          child: Center(
-                            child: Card(
-                              child: ListTile(
-                                title: Container(
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.end,
-                                    children: [
-                                      Container(
-                                        child: Column(
-                                          children: [
-                                            Text(
-                                              product.fullName,
-                                              style: TextStyle(
-                                                  fontFamily: "Vazir",
-                                                  fontSize: 18),
-                                            ),
-                                            SizedBox(
-                                              height: 12,
-                                            ),
-                                            Text(
-                                              product.description,
-                                              style: TextStyle(
-                                                  fontFamily: "Vazir",
-                                                  fontSize: 14),
-                                            ),
-                                          ],
+          body: Center(
+            child: FutureBuilder<List<Product>>(
+              future: productService.fetchProducts(),
+              builder:
+                  (BuildContext context, AsyncSnapshot<List<Product>> snapshot) {
+                if (!snapshot.hasData) {
+                  return Center(
+                    child: Text(""),
+                  );
+                }
+                return snapshot.data!.isEmpty
+                    ? Center(
+                        child: Text(
+                          "دیتایی برای نمایش وجود ندارد",
+                          style: TextStyle(fontFamily: "Vazir"),
+                        ),
+                      )
+                    : ListView(
+                        children: snapshot.data!.map((product) {
+                          return GestureDetector(
+                            onLongPress: () {
+                              _showPopupMenu(context, product, productService);
+                            },
+                            child: Center(
+                              child: Card(
+                                child: ListTile(
+                                  title: Container(
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.end,
+                                      children: [
+                                        Container(
+                                          child: Column(
+                                            children: [
+                                              Text(
+                                                product.fullName,
+                                                style: TextStyle(
+                                                    fontFamily: "Vazir",
+                                                    fontSize: 18),
+                                              ),
+                                              SizedBox(
+                                                height: 12,
+                                              ),
+                                              Text(
+                                                product.description,
+                                                style: TextStyle(
+                                                    fontFamily: "Vazir",
+                                                    fontSize: 14),
+                                              ),
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                        );
-                      }).toList(),
-                    );
-            },
+                          );
+                        }).toList(),
+                      );
+              },
+            ),
           ),
-        ),
       ),
     );
   }

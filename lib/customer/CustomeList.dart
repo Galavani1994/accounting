@@ -15,21 +15,12 @@ class CustomerList extends StatefulWidget {
 class _CustomerListState extends State<CustomerList> with WidgetsBindingObserver {
   final _formKey = GlobalKey<FormState>();
 
-  void showAlert() {}
-
-
   @override
   Widget build(BuildContext context) {
     DatabaseHelper dbHelper = DatabaseHelper();
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: WillPopScope(
-        onWillPop: () async {
-          //Navigator.pop(context);
-          //Navigator.of(context, rootNavigator: true).pop();
-          return false;
-        },
-        child: Scaffold(
+      home: Scaffold(
           appBar: AppBar(
             bottom: PreferredSize(
               child: Row(
@@ -110,7 +101,6 @@ class _CustomerListState extends State<CustomerList> with WidgetsBindingObserver
               },
             ),
           ),
-        ),
       ),
     );
   }

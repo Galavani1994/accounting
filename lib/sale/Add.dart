@@ -79,7 +79,7 @@ class _AddState extends State<Add> {
                         Navigator.of(context, rootNavigator: true).pop();
                       },
                       child: Text(
-                        "بازگشت",
+                        "انصراف",
                         style: TextStyle(fontFamily: "Vazir"),
                       )),
                   ElevatedButton(

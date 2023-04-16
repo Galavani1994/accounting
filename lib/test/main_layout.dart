@@ -21,84 +21,95 @@ class _MainLayoutState extends State<MainLayout> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: <Widget>[
-          Navigator(
-            key: _page1,
-            onGenerateRoute: (route) => MaterialPageRoute(
-              settings: route,
-              builder: (context) => ProductList(),
+    return WillPopScope(
+      onWillPop: () async{
+        return false;
+      },
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: Scaffold(
+          body: IndexedStack(
+            index: _currentIndex,
+            children: <Widget>[
+              Navigator(
+                key: _page1,
+                onGenerateRoute: (route) => MaterialPageRoute(
+                  settings: route,
+                  builder: (context) => ProductList(),
+                ),
+              ),
+              Navigator(
+                key: _page2,
+                onGenerateRoute: (route) => MaterialPageRoute(
+                  settings: route,
+                  builder: (context) => CustomerList(),
+                ),
+              ),
+              Navigator(
+                key: _page3,
+                onGenerateRoute: (route) => MaterialPageRoute(
+                  settings: route,
+                  builder: (context) => Report(),
+                ),
+              ),
+              Navigator(
+                key: _page4,
+                onGenerateRoute: (route) => MaterialPageRoute(
+                  settings: route,
+                  builder: (context) => Setting(),
+                ),
+              ),
+            ],
+          ),
+          bottomNavigationBar: BottomAppBar(
+            shape: const CircularNotchedRectangle(),
+            clipBehavior: Clip.antiAlias,
+            child: BottomNavigationBar(
+              backgroundColor: Colors.white,
+              currentIndex: _currentIndex,
+              onTap: (index) {
+                setState(() {
+                  _currentIndex = index;
+                });
+              },
+              type: BottomNavigationBarType.fixed,
+              selectedItemColor: Colors.red[900],
+              unselectedItemColor: Colors.grey,
+              showSelectedLabels: true,
+              showUnselectedLabels: true,
+              items: const <BottomNavigationBarItem>[
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.production_quantity_limits_sharp),
+                  label: 'محصولات',
+                ),
+                BottomNavigationBarItem(
+                    icon: Icon(Icons.person_add_alt_rounded), label: 'مشتریان'),
+                BottomNavigationBarItem(
+                    icon: Icon(Icons.report), label: 'گزارشات'),
+                BottomNavigationBarItem(
+                    icon: Icon(Icons.settings), label: 'تنظیمات'),
+              ],
             ),
           ),
-          Navigator(
-            key: _page2,
-            onGenerateRoute: (route) => MaterialPageRoute(
-              settings: route,
-              builder: (context) => CustomerList(),
-            ),
-          ),
-          Navigator(
-            key: _page3,
-            onGenerateRoute: (route) => MaterialPageRoute(
-              settings: route,
-              builder: (context) => Report(),
-            ),
-          ),
-          Navigator(
-            key: _page4,
-            onGenerateRoute: (route) => MaterialPageRoute(
-              settings: route,
-              builder: (context) => Setting(),
-            ),
-          ),
-        ],
-      ),
-      bottomNavigationBar: BottomAppBar(
-        shape: const CircularNotchedRectangle(),
-        clipBehavior: Clip.antiAlias,
-        child: BottomNavigationBar(
-          backgroundColor: Colors.white,
-          currentIndex: _currentIndex,
-          onTap: (index) {
-            setState(() {
-              _currentIndex = index;
-            });
-          },
-          type: BottomNavigationBarType.fixed,
-          selectedItemColor: Colors.red[900],
-          unselectedItemColor: Colors.grey,
-          showSelectedLabels: true,
-          showUnselectedLabels: true,
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(icon: Icon(Icons.production_quantity_limits_sharp), label: 'محصولات',),
-            BottomNavigationBarItem(icon: Icon(Icons.person_add_alt_rounded), label: 'مشتریان'),
-            BottomNavigationBarItem(icon: Icon(Icons.report), label: 'گزارشات'),
-            BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'تنظیمات'),
-          ],
+          floatingActionButton: FloatingActionButton(
+              backgroundColor: Colors.red[900],
+              onPressed: () {
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) => Dialog(
+                          shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.circular(12.0)), //this right here
+                          child: Container(
+                              height: MediaQuery.of(context).size.height - 250,
+                              width: 400.0,
+                              child: Add()),
+                        ));
+              },
+              child: Icon(Icons.wallet)),
+          floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-          backgroundColor: Colors.red[900],
-          onPressed: () {
-            showDialog(
-                context: context,
-                builder: (BuildContext context) => Dialog(
-                  shape: RoundedRectangleBorder(
-                      borderRadius:
-                      BorderRadius.circular(12.0)), //this right here
-                  child: Container(
-                      height: MediaQuery.of(context).size.height - 250,
-                      width: 400.0,
-                      child: Add()),
-                ));
-          },
-          child: Icon(Icons.wallet)),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }
-
-
-

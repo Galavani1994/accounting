@@ -27,93 +27,90 @@ class CustomerEdit extends StatelessWidget {
         text: customer?.phoneNumber == null ? "" : "${customer?.phoneNumber}");
     TextEditingController descriptionController = TextEditingController(
         text: customer?.description == null ? "" : "${customer?.description}");
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: WillPopScope(
-        onWillPop: () async {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => CustomerList()));
-          return false;
-        },
-        child: Scaffold(
-          appBar: AppBar(
-            title: Text(
-              "مشتری",
-              style: TextStyle(fontFamily: "Vazir"),
-            ),
-            centerTitle: true,
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => CustomerList()));
+        return true;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            "مشتری",
+            style: TextStyle(fontFamily: "Vazir"),
           ),
-          body: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: SingleChildScrollView(
-              child: Container(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: <Widget>[
-                    Directionality(
-                      textDirection: TextDirection.rtl,
-                      child: TextFormField(
-                        controller: fullNameController,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10))),
-                          prefixIcon: const Icon(Icons.person),
-                          hintText: 'نام کامل را وارد کنید',
-                          labelText: 'نام کامل',
-                        ),
+          centerTitle: true,
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: SingleChildScrollView(
+            child: Container(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  Directionality(
+                    textDirection: TextDirection.rtl,
+                    child: TextFormField(
+                      controller: fullNameController,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(10))),
+                        prefixIcon: const Icon(Icons.person),
+                        hintText: 'نام کامل را وارد کنید',
+                        labelText: 'نام کامل',
                       ),
                     ),
-                    SizedBox(height: 15),
-                    Directionality(
-                      textDirection: TextDirection.rtl,
-                      child: TextFormField(
-                        controller: phoneController,
-                        keyboardType: TextInputType.phone,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10))),
-                          prefixIcon: const Icon(Icons.phone),
-                          hintText: 'شماره تماس را وارد کنید',
-                          labelText: 'شماره تماس',
-                        ),
+                  ),
+                  SizedBox(height: 15),
+                  Directionality(
+                    textDirection: TextDirection.rtl,
+                    child: TextFormField(
+                      controller: phoneController,
+                      keyboardType: TextInputType.phone,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(10))),
+                        prefixIcon: const Icon(Icons.phone),
+                        hintText: 'شماره تماس را وارد کنید',
+                        labelText: 'شماره تماس',
                       ),
                     ),
-                    SizedBox(height: 15),
-                    Directionality(
-                      textDirection: TextDirection.rtl,
-                      child: TextFormField(
-                        controller: descriptionController,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10))),
-                          prefixIcon: const Icon(Icons.description),
-                          hintText: 'توضیحات خود را وارد کنید',
-                          labelText: 'توضیحات',
-                        ),
+                  ),
+                  SizedBox(height: 15),
+                  Directionality(
+                    textDirection: TextDirection.rtl,
+                    child: TextFormField(
+                      controller: descriptionController,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(10))),
+                        prefixIcon: const Icon(Icons.description),
+                        hintText: 'توضیحات خود را وارد کنید',
+                        labelText: 'توضیحات',
                       ),
                     ),
-                    SizedBox(height: 20),
-                    ElevatedButton(
-                        onPressed: () {
-                          Customer cu = Customer(
-                              id: customer?.id,
-                              fullName: fullNameController.text,
-                              phoneNumber: phoneController.text,
-                              description: descriptionController.text,
-                              createDate: DateTime.now().toString(),
-                              updateDate: DateTime.now().toString());
-                          dbHelper.addItem(cu);
-                          showAlert();
-                          FocusScope.of(context).unfocus();
-                        },
-                        child: Text(
-                          "ثبت",
-                          style: TextStyle(fontFamily: "Vazir"),
-                        )),
-                  ],
-                ),
+                  ),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                      onPressed: () {
+                        Customer cu = Customer(
+                            id: customer?.id,
+                            fullName: fullNameController.text,
+                            phoneNumber: phoneController.text,
+                            description: descriptionController.text,
+                            createDate: DateTime.now().toString(),
+                            updateDate: DateTime.now().toString());
+                        dbHelper.addItem(cu);
+                        showAlert();
+                        FocusScope.of(context).unfocus();
+                      },
+                      child: Text(
+                        "ثبت",
+                        style: TextStyle(fontFamily: "Vazir"),
+                      )),
+                ],
               ),
             ),
           ),
