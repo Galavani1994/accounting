@@ -19,18 +19,18 @@ class _MainLayoutState extends State<MainLayout> {
   final _page3 = GlobalKey<NavigatorState>();
   final _page4 = GlobalKey<NavigatorState>();
 
+
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () async{
-        return false;
-      },
+      onWillPop: () => _onBackPressed(context),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         home: Scaffold(
           body: IndexedStack(
             index: _currentIndex,
-            children: <Widget>[
+            children: [
               Navigator(
                 key: _page1,
                 onGenerateRoute: (route) => MaterialPageRoute(
@@ -111,5 +111,44 @@ class _MainLayoutState extends State<MainLayout> {
         ),
       ),
     );
+  }
+
+  DateTime? _lastBackPressedTime;
+
+  Future<bool> _onBackPressed(BuildContext context) {
+    
+    print('iam here');
+    DateTime currentTime = DateTime.now();
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: SizedBox(
+        height: 100,
+        child: Text('Press back again to exit'),
+      ),
+      action: SnackBarAction(
+        label: 'Undo',
+        onPressed: () {
+          // Perform an action when the user presses the "Undo" button
+        },
+      ),
+    ));
+    // If back button was pressed twice within 2 seconds, exit the app
+    if (_lastBackPressedTime == null || currentTime.difference(_lastBackPressedTime!) > Duration(seconds: 2)) {
+      _lastBackPressedTime = currentTime;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: SizedBox(
+          height: 100,
+           child: Text('Press back again to exit'),
+        ),
+        action: SnackBarAction(
+          label: 'Undo',
+          onPressed: () {
+            // Perform an action when the user presses the "Undo" button
+          },
+        ),
+      ));
+      return Future.value(false);
+    } else {
+      return Future.value(true);
+    }
   }
 }

@@ -27,7 +27,8 @@ class _AddState extends State<Add> {
   TextEditingController paymentController = TextEditingController();
   TextEditingController totalController = TextEditingController(text: "0");
   TextEditingController descriptionController = TextEditingController();
-  TextEditingController dateTimeController = TextEditingController(text: Jalali.fromDateTime(DateTime.now()).formatCompactDate().toString());
+  TextEditingController dateTimeController = TextEditingController(
+      text: Jalali.fromDateTime(DateTime.now()).formatCompactDate().toString());
 
   var selectedCustomer;
   var selectedProduct;
@@ -36,63 +37,77 @@ class _AddState extends State<Add> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              SizedBox(height: 15),
-              TextField(
-                keyboardType: TextInputType.none,
-                onTap: () => showDatePickerPersian(context),
-                controller: dateTimeController,
-                decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10))),
-                    labelText: "date time"),
-              ),
-              SizedBox(height: 15),
-              f_customer(),
-              SizedBox(height: 15),
-              f_product(),
-              SizedBox(height: 15),
-              f_quantity(),
-              SizedBox(height: 15),
-              f_fee(),
-              SizedBox(height: 15),
-              f_discount(),
-              SizedBox(height: 20),
-              f_payment(),
-              SizedBox(height: 20),
-              f_total(),
-              SizedBox(height: 20),
-              f_description(),
-              SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context, rootNavigator: true).pop();
-                      },
-                      child: Text(
-                        "انصراف",
-                        style: TextStyle(fontFamily: "Vazir"),
-                      )),
-                  ElevatedButton(
-                      onPressed: () {
-                        save(context);
-                      },
-                      child: Text(
-                        "ثبت",
-                        style: TextStyle(fontFamily: "Vazir"),
-                      )),
-                ],
-              )
-            ],
+          child: Directionality(
+            textDirection: TextDirection.rtl,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                SizedBox(height: 15),
+                TextField(
+                  keyboardType: TextInputType.none,
+                  onTap: () => showDatePickerPersian(context),
+                  controller: dateTimeController,
+                  decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                      ),
+                      labelText: "تاریخ",
+                  constraints: BoxConstraints.tightFor(height: 50)
+                  ),
+                ),
+                SizedBox(height: 15),
+                f_customer(),
+                SizedBox(height: 15),
+                f_product(),
+                SizedBox(height: 15),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    f_quantity(),
+                    f_fee(),
+                  ],
+                ),
+                SizedBox(height: 15),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    f_discount(),
+                    f_payment(),
+                  ],
+                ),
+                SizedBox(height: 20),
+                f_total(),
+                SizedBox(height: 20),
+                f_description(),
+                SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+
+                    ElevatedButton(
+                        onPressed: () {
+                          save(context);
+                        },
+                        child: Text(
+                          "ثبت",
+                          style: TextStyle(fontFamily: "Vazir"),
+                        )),
+                    ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context, rootNavigator: true).pop();
+                        },
+                        child: Text(
+                          "انصراف",
+                          style: TextStyle(fontFamily: "Vazir"),
+                        )),
+                  ],
+                )
+              ],
+            ),
           ),
         ),
       ),
@@ -108,9 +123,11 @@ class _AddState extends State<Add> {
       onChanged: (Customer? data) => selectedCustomer = data?.id,
       dropdownDecoratorProps: DropDownDecoratorProps(
         dropdownSearchDecoration: InputDecoration(
-          labelText: "customer",
+          labelText: "مشتری",
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(10))),
+          constraints: BoxConstraints.tightFor(height: 60)
+
         ),
       ),
     );
@@ -125,9 +142,10 @@ class _AddState extends State<Add> {
       onChanged: (Product? data) => selectedProduct = data?.id,
       dropdownDecoratorProps: DropDownDecoratorProps(
         dropdownSearchDecoration: InputDecoration(
-          labelText: "product",
+          labelText: "محصول",
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(10))),
+          constraints: BoxConstraints.tightFor(height: 60)
         ),
       ),
     );
@@ -139,11 +157,10 @@ class _AddState extends State<Add> {
       controller: quantityController,
       keyboardType: TextInputType.number,
       decoration: const InputDecoration(
-        border: OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(10))),
-        hintText: 'Enter your quantity',
-        labelText: 'quantity',
-      ),
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10))),
+          labelText: 'اندازه',
+          constraints: BoxConstraints.tightFor(width: 150,height: 50)),
     );
   }
 
@@ -153,11 +170,10 @@ class _AddState extends State<Add> {
       controller: feeController,
       keyboardType: TextInputType.number,
       decoration: const InputDecoration(
-        border: OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(10))),
-        hintText: 'Enter fee',
-        labelText: 'fee',
-      ),
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10))),
+          labelText: 'قیمت',
+          constraints: BoxConstraints.tightFor(width: 150,height: 50)),
       inputFormatters: [ThousandsSeparatorInputFormatter()],
     );
   }
@@ -168,11 +184,10 @@ class _AddState extends State<Add> {
       controller: discountController,
       keyboardType: TextInputType.number,
       decoration: const InputDecoration(
-        border: OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(10))),
-        hintText: 'Enter discount',
-        labelText: 'discount',
-      ),
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10))),
+          labelText: 'تخفیف',
+          constraints: BoxConstraints.tightFor(width: 150, height: 50)),
       inputFormatters: [ThousandsSeparatorInputFormatter()],
     );
   }
@@ -183,11 +198,10 @@ class _AddState extends State<Add> {
       controller: paymentController,
       keyboardType: TextInputType.number,
       decoration: const InputDecoration(
-        border: OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(10))),
-        hintText: 'Enter payment',
-        labelText: 'payment',
-      ),
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10))),
+          labelText: 'پرداختی',
+          constraints: BoxConstraints.tightFor(width: 150, height: 50)),
       inputFormatters: [ThousandsSeparatorInputFormatter()],
     );
   }
@@ -199,7 +213,8 @@ class _AddState extends State<Add> {
       decoration: InputDecoration(
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(10))),
-          labelText: "total"),
+          labelText: "جمع",
+      constraints: BoxConstraints.tightFor(height: 50)),
       keyboardType: TextInputType.number,
       inputFormatters: [ThousandsSeparatorInputFormatter()],
     );
@@ -211,7 +226,7 @@ class _AddState extends State<Add> {
       decoration: InputDecoration(
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(10))),
-          labelText: "description"),
+          labelText: "توضیحات"),
     );
   }
 
@@ -289,6 +304,7 @@ class _AddState extends State<Add> {
     showAlert(context);
     FocusScope.of(context).unfocus();
   }
+
   void showAlert(BuildContext context) {
     QuickAlert.show(
         context: context,

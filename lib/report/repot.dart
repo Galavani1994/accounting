@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'SimpleChart.dart';
+
 class Report extends StatefulWidget {
   const Report({Key? key}) : super(key: key);
 
@@ -11,11 +13,13 @@ class _ReportState extends State<Report> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:AppBar(
+      appBar: AppBar(
+        title: Text('گزارشات مالی',style: TextStyle(fontFamily: 'Vazir')),
         centerTitle: true,
-        title: Text('گزارشات'),
       ),
-      body: Text('به زودی'),
+      body: Center(
+        child: SimpleChart(),
+      ),
     );
   }
 }
