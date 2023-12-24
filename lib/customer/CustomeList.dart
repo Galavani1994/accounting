@@ -77,7 +77,7 @@ class _CustomerListState extends State<CustomerList> with WidgetsBindingObserver
                                       crossAxisAlignment: CrossAxisAlignment.end,
                                       children: [
                                         Text(
-                                          customer.fullName,
+                                          customer.first_name,
                                           style: TextStyle(
                                               fontFamily: "Vazir", fontSize: 18),
                                         ),

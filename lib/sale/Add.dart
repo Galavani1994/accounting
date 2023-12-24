@@ -21,6 +21,7 @@ class Add extends StatefulWidget {
 }
 
 class _AddState extends State<Add> {
+  TextEditingController productTitleController = TextEditingController();
   TextEditingController quantityController = TextEditingController();
   TextEditingController feeController = TextEditingController();
   TextEditingController discountController = TextEditingController();
@@ -32,59 +33,75 @@ class _AddState extends State<Add> {
 
   var selectedCustomer;
   var selectedProduct;
+  bool isChecked = false;
 
   SaleService saleService = SaleService();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: SingleChildScrollView(
-          child: Directionality(
-            textDirection: TextDirection.rtl,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                SizedBox(height: 15),
-                TextField(
-                  keyboardType: TextInputType.none,
-                  onTap: () => showDatePickerPersian(context),
-                  controller: dateTimeController,
-                  decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                      ),
-                      labelText: "تاریخ",
-                  constraints: BoxConstraints.tightFor(height: 50)
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            children: [
+              Container(
+                height: MediaQuery.of(context).size.height-350,
+                child: SingleChildScrollView(
+                  child: Directionality(
+                    textDirection: TextDirection.rtl,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        SizedBox(height: 15),
+                        TextField(
+                          keyboardType: TextInputType.none,
+                          onTap: () => showDatePickerPersian(context),
+                          controller: dateTimeController,
+                          decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                              ),
+                              labelText: "تاریخ",
+                          constraints: BoxConstraints.tightFor(height: 50)
+                          ),
+                        ),
+                        SizedBox(height: 15),
+                        f_customer(),
+                        SizedBox(height: 15),
+                        f_product(),
+                        f_checkBox(),
+                        SizedBox(height: 15),
+                        f_product_title(),
+                        SizedBox(height: 15),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            f_quantity(),
+                            f_fee(),
+                          ],
+                        ),
+                        SizedBox(height: 15),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            f_discount(),
+                            f_payment(),
+                          ],
+                        ),
+                        SizedBox(height: 20),
+                        f_total(),
+                        SizedBox(height: 20),
+                        f_description(),
+                        SizedBox(height: 20),
+                      ],
+                    ),
                   ),
                 ),
-                SizedBox(height: 15),
-                f_customer(),
-                SizedBox(height: 15),
-                f_product(),
-                SizedBox(height: 15),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    f_quantity(),
-                    f_fee(),
-                  ],
-                ),
-                SizedBox(height: 15),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    f_discount(),
-                    f_payment(),
-                  ],
-                ),
-                SizedBox(height: 20),
-                f_total(),
-                SizedBox(height: 20),
-                f_description(),
-                SizedBox(height: 20),
-                Row(
+              ),
+              Directionality(
+                textDirection: TextDirection.rtl,
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
 
@@ -105,9 +122,9 @@ class _AddState extends State<Add> {
                           style: TextStyle(fontFamily: "Vazir"),
                         )),
                   ],
-                )
-              ],
-            ),
+                ),
+              )
+            ],
           ),
         ),
       ),
@@ -119,7 +136,7 @@ class _AddState extends State<Add> {
     var fetchCustomers = dbHelper.fetchCustomers();
     return DropdownSearch<Customer>(
       asyncItems: (String filter) => fetchCustomers,
-      itemAsString: (Customer u) => u.fullName,
+      itemAsString: (Customer u) => u.first_name+u.last_name,
       onChanged: (Customer? data) => selectedCustomer = data?.id,
       dropdownDecoratorProps: DropDownDecoratorProps(
         dropdownSearchDecoration: InputDecoration(
@@ -136,17 +153,49 @@ class _AddState extends State<Add> {
   Widget f_product() {
     ProductService service = ProductService();
     var fetchProducts = service.fetchProducts();
-    return DropdownSearch<Product>(
-      asyncItems: (String filter) => fetchProducts,
-      itemAsString: (Product u) => u.fullName,
-      onChanged: (Product? data) => selectedProduct = data?.id,
-      dropdownDecoratorProps: DropDownDecoratorProps(
-        dropdownSearchDecoration: InputDecoration(
-          labelText: "محصول",
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(10))),
-          constraints: BoxConstraints.tightFor(height: 60)
+    return Visibility(
+      visible: !isChecked,
+      child: DropdownSearch<Product>(
+        asyncItems: (String filter) => fetchProducts,
+        itemAsString: (Product u) => u.fullName,
+        onChanged: (Product? data) => selectedProduct = data?.id,
+        dropdownDecoratorProps: DropDownDecoratorProps(
+          dropdownSearchDecoration: InputDecoration(
+            labelText: "محصول",
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(10)))
+          ),
         ),
+      ),
+    );
+  }
+
+  Widget f_checkBox(){
+    return Row(
+      children: [
+        Checkbox(
+          checkColor: Colors.white,
+          fillColor: MaterialStateProperty.resolveWith(getColor),
+          value: isChecked,
+          onChanged: (bool? value) {
+            setState(() {
+              isChecked = value!;
+            });
+          },
+        ),
+        Text('محصول یافت نشد'),
+      ],
+    );
+  }
+  Widget f_product_title(){
+    return Visibility(
+      visible: isChecked,
+      child: TextFormField(
+        controller: productTitleController,
+        decoration: const InputDecoration(
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(10))),
+            labelText: 'عنوان محصول'),
       ),
     );
   }
@@ -160,7 +209,7 @@ class _AddState extends State<Add> {
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(10))),
           labelText: 'اندازه',
-          constraints: BoxConstraints.tightFor(width: 150,height: 50)),
+          constraints: BoxConstraints.tightFor(width: 100,height: 50)),
     );
   }
 
@@ -173,7 +222,7 @@ class _AddState extends State<Add> {
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(10))),
           labelText: 'قیمت',
-          constraints: BoxConstraints.tightFor(width: 150,height: 50)),
+          constraints: BoxConstraints.tightFor(width: 100,height: 50)),
       inputFormatters: [ThousandsSeparatorInputFormatter()],
     );
   }
@@ -187,21 +236,22 @@ class _AddState extends State<Add> {
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(10))),
           labelText: 'تخفیف',
-          constraints: BoxConstraints.tightFor(width: 150, height: 50)),
+          constraints: BoxConstraints.tightFor(width: 100, height: 50)),
       inputFormatters: [ThousandsSeparatorInputFormatter()],
+      style: const TextStyle(fontSize: 16),
     );
   }
 
   Widget f_payment() {
     return TextFormField(
-      onChanged: (value) => {calculateTotal(value)},
+
       controller: paymentController,
       keyboardType: TextInputType.number,
       decoration: const InputDecoration(
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(10))),
           labelText: 'پرداختی',
-          constraints: BoxConstraints.tightFor(width: 150, height: 50)),
+          constraints: BoxConstraints.tightFor(width: 100, height: 50)),
       inputFormatters: [ThousandsSeparatorInputFormatter()],
     );
   }
@@ -249,6 +299,18 @@ class _AddState extends State<Add> {
     }
   }
 
+  Color getColor(Set<MaterialState> states) {
+    const Set<MaterialState> interactiveStates = <MaterialState>{
+      MaterialState.pressed,
+      MaterialState.hovered,
+      MaterialState.focused,
+    };
+    if (states.any(interactiveStates.contains)) {
+      return Colors.blue;
+    }
+    return Colors.red;
+  }
+
   String formatAmount(String price) {
     String priceInText = "";
     int counter = 0;
@@ -283,6 +345,7 @@ class _AddState extends State<Add> {
       createDate: dateTimeController.text,
       updateDate: DateTime.now().toString(),
       productId: selectedProduct,
+      productTitle: productTitleController.text,
       customerId: selectedCustomer,
       quantity: quantityController.text.isEmpty
           ? 0

@@ -21,8 +21,8 @@ class SaleDetail extends StatefulWidget {
 }
 
 class _SaleDetailState extends State<SaleDetail> {
-  var customerFullName="";
-  var productFullName="";
+  var customerFullName = "";
+  var productFullName = "";
 
   @override
   Widget build(BuildContext context) {
@@ -34,13 +34,11 @@ class _SaleDetailState extends State<SaleDetail> {
                 customerFullName = value!;
               })
             });
-    saleService
-        .getProductNameById(widget.entity.productId)
-        .then((value) => {
-      setState(() {
-        productFullName = value!;
-      })
-    });
+    saleService.getProductNameById(widget.entity.productId).then((value) => {
+          setState(() {
+            productFullName = value!;
+          })
+        });
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -54,7 +52,7 @@ class _SaleDetailState extends State<SaleDetail> {
                 SizedBox(height: 15),
                 f_customer(widget.entity.customerId),
                 SizedBox(height: 15),
-                f_product(widget.entity.productId),
+                f_product(widget.entity.productTitle),
                 SizedBox(height: 15),
                 f_quantity(widget.entity.quantity),
                 SizedBox(height: 15),
@@ -108,12 +106,14 @@ class _SaleDetailState extends State<SaleDetail> {
     );
   }
 
-  Widget f_product(int? productId) {
+  Widget f_product(String? productTitle) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          productFullName,
+          (productFullName == null || productFullName.isEmpty)
+              ? (productTitle ?? '')
+              : productFullName,
           style: TextStyle(fontFamily: "Vazir"),
         ),
         Text(

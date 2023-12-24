@@ -15,16 +15,18 @@ class DatabaseHelper {
     return await openDatabase(
         //open the database or create a database if there isn't any
         path,
-        version: 7,
+        version: 10,
         onCreate: _onCreate);
   }
 
   Future _onCreate(Database db, int version) async {
     await db.execute('''
-    CREATE TABLE CUSTOMER(
+    CREATE TABLE PERSON(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    fullName TEXT,
+    first_name TEXT,
+    last_name TEXT,
     phoneNumber TEXT,
+    address TEXT,
     description TEXT,
     createDate TEXT,
     updateDate TEXT
@@ -46,14 +48,15 @@ class DatabaseHelper {
     createDate TEXT,
     updateDate TEXT,
     productId INTEGER,
-    customerId INTEGER,
+    productTitle TEXT,
+    personId INTEGER,
     price INTEGER,
     quantity REAL,
     total TEXT,
     discount INTEGER,
     payment INTEGER,
     FOREIGN KEY (productId) REFERENCES PRODUCT (id),
-    FOREIGN KEY (customerId) REFERENCES CUSTOMER (id)
+    FOREIGN KEY (personId) REFERENCES PERSON (id)
     )
     """);
   }
@@ -67,7 +70,7 @@ class DatabaseHelper {
       //returns number of items inserted as an integer
       final db = await init(); //open database
       Future<int> res = db.insert(
-        "CUSTOMER", item.toMap(), //toMap() function from MemoModel
+        "PERSON", item.toMap(), //toMap() function from MemoModel
         conflictAlgorithm: ConflictAlgorithm
             .ignore, //ignores conflicts due to duplicate entries
       );
@@ -80,14 +83,16 @@ class DatabaseHelper {
 
     final db = await init();
     final maps = await db
-        .query("CUSTOMER"); //query all the rows in a table as an array of maps
+        .query("PERSON"); //query all the rows in a table as an array of maps
 
     return List.generate(maps.length, (i) {
       //create a list of memos
       return Customer(
         id: maps[i]['id'] as int,
-        fullName: maps[i]['fullName'] as String,
+        first_name: maps[i]['first_name'] as String,
+        last_name: maps[i]['last_name'] as String,
         phoneNumber: maps[i]['phoneNumber'] as String,
+        address: maps[i]['address'] as String,
         description: maps[i]['description'] as String,
         createDate: maps[i]['createDate'] as String,
         updateDate: maps[i]['updateDate'] as String,
@@ -99,7 +104,7 @@ class DatabaseHelper {
     //returns number of items deleted
     final db = await init();
     int entityId = int.parse(id);
-    int result = await db.delete("CUSTOMER", //table name
+    int result = await db.delete("PERSON", //table name
         where: "id = ?",
         whereArgs: [entityId] // use whereArgs to avoid SQL injection
         );
@@ -113,22 +118,7 @@ class DatabaseHelper {
     final db = await init();
 
     int result = await db
-        .update("CUSTOMER", item.toMap(), where: "id = ?", whereArgs: [id]);
+        .update("PERSON", item.toMap(), where: "id = ?", whereArgs: [id]);
     return result;
   }
-
-/*static final instance = DatabaseHelper._privateConstructor();
-  static Database? _database;
-
-  Future<Database> get database async => _database ??= await _initDataqbase();
-
-  Future<Database> _initDataqbase() async {
-    Directory directory = await getApplicationDocumentsDirectory();
-    String path = join(directory.path, 'accounting.db');
-    return await openDatabase(
-      path,
-      version: 1,
-      onCreate: _onCreate,
-    );
-  }*/
 }

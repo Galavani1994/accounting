@@ -22,7 +22,7 @@ class CustomerEdit extends StatelessWidget {
 
     DatabaseHelper dbHelper = DatabaseHelper();
     TextEditingController fullNameController = TextEditingController(
-        text: customer?.fullName == null ? "" : "${customer?.fullName}");
+        text: customer?.first_name == null ? "" : "${customer?.first_name}");
     TextEditingController phoneController = TextEditingController(
         text: customer?.phoneNumber == null ? "" : "${customer?.phoneNumber}");
     TextEditingController descriptionController = TextEditingController(
@@ -97,8 +97,10 @@ class CustomerEdit extends StatelessWidget {
                       onPressed: () {
                         Customer cu = Customer(
                             id: customer?.id,
-                            fullName: fullNameController.text,
+                            first_name: fullNameController.text,
+                            last_name: '',
                             phoneNumber: phoneController.text,
+                            address: '',
                             description: descriptionController.text,
                             createDate: DateTime.now().toString(),
                             updateDate: DateTime.now().toString());

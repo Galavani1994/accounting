@@ -25,16 +25,16 @@ class SaleService {
     }
   }
 
-  Future<List<Sale>> fetchSales(int? customerId) async {
+  Future<List<Sale>> fetchSales(int? personId) async {
     //returns the memos as a list (array)
     DatabaseHelper helper = DatabaseHelper();
     final db = await helper.init();
     final maps;
     List<Sale> list = [Sale()];
-    if (customerId != null && customerId > 0) {
+    if (personId != null && personId > 0) {
       try {
         maps = await db
-            .query("Sale", where: "customerId=?", whereArgs: [customerId],orderBy: "createDate DESC");
+            .query("Sale", where: "personId=?", whereArgs: [personId],orderBy: "createDate DESC");
         list = generateList(maps);
       } catch (ex) {
         print(ex.toString());
@@ -59,30 +59,32 @@ class SaleService {
           updateDate: maps[i]['updateDate'] as String,
           productId:
               (maps[i]['productId'] == null ? 0 : maps[i]['productId']) as int,
-          customerId: (maps[i]['customerId'] == null
+          productTitle:
+          (maps[i]['productTitle'] == null ? '' : maps[i]['productTitle']) as String,
+          customerId: (maps[i]['personId'] == null
               ? 0
-              : maps[i]['customerId']) as int,
+              : maps[i]['personId']) as int,
           price: maps[i]['price'] as int,
           quantity: maps[i]['quantity'] as double,
-          total: maps[i]['total'] as String,
+          total: (maps[i]['total'] as int).toString(),
           discount: maps[i]['discount'] as int,
           payment: maps[i]['payment'] as int,
         );
       });
 
-  Future<String?> getTotalByCustomerId(int? customerId) async {
+  Future<String?> getTotalByPersonId(int? personId) async {
     DatabaseHelper helper = DatabaseHelper();
     final db = await helper.init();
     String query = """
     select  (t1.total-t1.payment) balance from (
              select 
-                (select sum(payment) from sale where customerid=?) as payment,
-                (select sum(payment+total) from sale where customerId=? and total>0)as total
+                (select sum(payment) from sale where personId=?) as payment,
+                (select sum(total) from sale where personId=? and total>0)as total
                                                  ) t1
     """;
 
     var res = await db
-        .rawQuery(query, [customerId.toString(), customerId.toString()]);
+        .rawQuery(query, [personId.toString(), personId.toString()]);
     String? result = "0";
     List.generate(res.length, (i) {
       if (res[i]["balance"] != null) {
@@ -92,17 +94,23 @@ class SaleService {
     return result;
   }
 
-  Future<String?> getCustomerFullNameById(int? customerId) async {
+  Future<String?> getCustomerFullNameById(int? personId) async {
     DatabaseHelper helper = DatabaseHelper();
     final db = await helper.init();
-    String query = "select fullName from CUSTOMER where id=?";
+    String query = "select first_name,last_name from PERSON where id=?";
 
-    var res = await db.rawQuery(query, [customerId.toString()]);
+    var res = await db.rawQuery(query, [personId.toString()]);
     String? result = "";
     List.generate(res.length, (i) {
-      if (res[i]["fullName"] != null) {
-        result = res[i]["fullName"].toString();
+      String firstName='';
+      String lastName='';
+      if (res[i]["first_name"] != null) {
+        firstName = res[i]["first_name"].toString();
       }
+      if (res[i]["last_name"] != null) {
+        lastName = res[i]["last_name"].toString();
+      }
+      result=firstName+" "+ lastName;
     });
     return result;
   }
@@ -122,12 +130,12 @@ class SaleService {
     return result;
   }
 
-  Future<String?> getPaymentByCustomerId(int? customerId) async {
+  Future<String?> getPaymentByPersonId(int? personId) async {
     DatabaseHelper helper = DatabaseHelper();
     final db = await helper.init();
-    String query = "select sum(payment) as payment from sale where customerid=?";
+    String query = "select sum(payment) as payment from sale where personId=?";
 
-    var res = await db.rawQuery(query, [customerId.toString()]);
+    var res = await db.rawQuery(query, [personId.toString()]);
     String? result = "0";
     List.generate(res.length, (i) {
       if (res[i]["payment"] != null) {

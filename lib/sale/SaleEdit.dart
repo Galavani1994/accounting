@@ -126,7 +126,7 @@ class _SaleEditState extends State<SaleEdit> {
     var fetchCustomers = dbHelper.fetchCustomers();
     return DropdownSearch<Customer>(
       asyncItems: (String filter) => fetchCustomers,
-      itemAsString: (Customer u) => u.fullName,
+      itemAsString: (Customer u) => u.first_name,
       onChanged: (Customer? data) => selectedCustomer = data?.id,
       dropdownDecoratorProps: DropDownDecoratorProps(
         dropdownSearchDecoration: InputDecoration(

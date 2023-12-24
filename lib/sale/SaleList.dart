@@ -27,12 +27,12 @@ class _SaleListState extends State<SaleList> {
   Widget build(BuildContext context) {
     SaleService saleService = SaleService();
 
-    saleService.getTotalByCustomerId(widget.customer.id).then((value) => {
+    saleService.getTotalByPersonId(widget.customer.id).then((value) => {
           setState(() {
             totalByCustomerId = formatter.format(int.parse(value!));
           })
         });
-    saleService.getPaymentByCustomerId(widget.customer.id).then((value) => {
+    saleService.getPaymentByPersonId(widget.customer.id).then((value) => {
           setState(() {
             paymentByCustomerId = formatter.format(int.parse(value!));
           })
@@ -40,7 +40,7 @@ class _SaleListState extends State<SaleList> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'صورتحساب' + '  ' + widget.customer.fullName),
+          'صورتحساب' + '  ' + widget.customer.first_name+' '+widget.customer.last_name),
         centerTitle: true,
       ),
       body: Container(

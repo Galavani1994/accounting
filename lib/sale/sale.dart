@@ -5,6 +5,7 @@ class Sale {
   String? createDate;
   String? updateDate;
   int? productId;
+  String? productTitle;
   String? productName;
   int? customerId;
   String? customerName;
@@ -21,6 +22,7 @@ class Sale {
     this.updateDate,
     this.description,
     this.productId,
+    this.productTitle,
     this.productName,
     this.customerId,
     this.customerName,
@@ -41,6 +43,7 @@ class Sale {
     return <String, dynamic>{
       "id": id,
       "productId": productId,
+      "productTitle": productTitle,
       "customerId": customerId,
       "price": price,
       "quantity": quantity,

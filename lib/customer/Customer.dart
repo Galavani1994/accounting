@@ -2,17 +2,29 @@ class Customer {
   final int? id;
   String createDate;
   String updateDate;
-  String fullName;
+  String first_name;
+  String last_name;
   String phoneNumber;
+  String address;
   String description;
 
-  Customer({ this.id,required  this.fullName,required  this.phoneNumber,required  this.description,required this.createDate,required this.updateDate});
+  Customer(
+      {this.id,
+      required this.first_name,
+      required this.last_name,
+      required this.phoneNumber,
+      required this.address,
+      required this.description,
+      required this.createDate,
+      required this.updateDate});
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       "id": id,
-      "fullName": fullName,
+      "first_name": first_name,
+      "last_name": last_name,
       "phoneNumber": phoneNumber,
+      "address": address,
       "description": description,
       "createDate": createDate,
       "updateDate": updateDate
