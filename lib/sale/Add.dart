@@ -209,7 +209,7 @@ class _AddState extends State<Add> {
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(10))),
           labelText: 'اندازه',
-          constraints: BoxConstraints.tightFor(width: 100,height: 50)),
+          constraints: BoxConstraints.tightFor(width: 120,height: 50)),
     );
   }
 
@@ -222,7 +222,7 @@ class _AddState extends State<Add> {
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(10))),
           labelText: 'قیمت',
-          constraints: BoxConstraints.tightFor(width: 100,height: 50)),
+          constraints: BoxConstraints.tightFor(width: 120,height: 50)),
       inputFormatters: [ThousandsSeparatorInputFormatter()],
     );
   }
@@ -236,7 +236,7 @@ class _AddState extends State<Add> {
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(10))),
           labelText: 'تخفیف',
-          constraints: BoxConstraints.tightFor(width: 100, height: 50)),
+          constraints: BoxConstraints.tightFor(width: 120, height: 50)),
       inputFormatters: [ThousandsSeparatorInputFormatter()],
       style: const TextStyle(fontSize: 16),
     );
@@ -251,7 +251,7 @@ class _AddState extends State<Add> {
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(10))),
           labelText: 'پرداختی',
-          constraints: BoxConstraints.tightFor(width: 100, height: 50)),
+          constraints: BoxConstraints.tightFor(width: 120, height: 50)),
       inputFormatters: [ThousandsSeparatorInputFormatter()],
     );
   }
@@ -363,7 +363,11 @@ class _AddState extends State<Add> {
           ? "0"
           : totalController.text.replaceAll(",", ""),
     );
-    saleService.addItem(sl);
+    try{
+      saleService.addItem(sl);
+    }catch(e){
+      print(e.toString());
+    }
     showAlert(context);
     FocusScope.of(context).unfocus();
   }

@@ -33,15 +33,17 @@ class SaleService {
     List<Sale> list = [Sale()];
     if (personId != null && personId > 0) {
       try {
-        maps = await db
-            .query("Sale", where: "personId=?", whereArgs: [personId],orderBy: "createDate DESC");
+        maps = await db.query("Sale",
+            where: "personId=?",
+            whereArgs: [personId],
+            orderBy: "createDate  DESC,id DESC");
         list = generateList(maps);
       } catch (ex) {
         print(ex.toString());
       }
     } else {
       try {
-        maps = await db.query("Sale",orderBy: "createDate DESC");
+        maps = await db.query("Sale", orderBy: "createDate DESC");
         list = generateList(maps);
       } catch (ex) {
         print(ex.toString());
@@ -59,14 +61,14 @@ class SaleService {
           updateDate: maps[i]['updateDate'] as String,
           productId:
               (maps[i]['productId'] == null ? 0 : maps[i]['productId']) as int,
-          productTitle:
-          (maps[i]['productTitle'] == null ? '' : maps[i]['productTitle']) as String,
-          customerId: (maps[i]['personId'] == null
-              ? 0
-              : maps[i]['personId']) as int,
+          productTitle: (maps[i]['productTitle'] == null
+              ? ''
+              : maps[i]['productTitle']) as String,
+          customerId:
+              (maps[i]['personId'] == null ? 0 : maps[i]['personId']) as int,
           price: maps[i]['price'] as int,
           quantity: maps[i]['quantity'] as double,
-          total: (maps[i]['total'] as int).toString(),
+          total: (maps[i]['total'] as Object).toString(),
           discount: maps[i]['discount'] as int,
           payment: maps[i]['payment'] as int,
         );
@@ -83,8 +85,8 @@ class SaleService {
                                                  ) t1
     """;
 
-    var res = await db
-        .rawQuery(query, [personId.toString(), personId.toString()]);
+    var res =
+        await db.rawQuery(query, [personId.toString(), personId.toString()]);
     String? result = "0";
     List.generate(res.length, (i) {
       if (res[i]["balance"] != null) {
@@ -102,15 +104,15 @@ class SaleService {
     var res = await db.rawQuery(query, [personId.toString()]);
     String? result = "";
     List.generate(res.length, (i) {
-      String firstName='';
-      String lastName='';
+      String firstName = '';
+      String lastName = '';
       if (res[i]["first_name"] != null) {
         firstName = res[i]["first_name"].toString();
       }
       if (res[i]["last_name"] != null) {
         lastName = res[i]["last_name"].toString();
       }
-      result=firstName+" "+ lastName;
+      result = firstName + " " + lastName;
     });
     return result;
   }

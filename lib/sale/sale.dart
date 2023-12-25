@@ -44,7 +44,7 @@ class Sale {
       "id": id,
       "productId": productId,
       "productTitle": productTitle,
-      "customerId": customerId,
+      "personId": customerId,
       "price": price,
       "quantity": quantity,
       "total": total,

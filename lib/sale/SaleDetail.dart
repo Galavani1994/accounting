@@ -60,9 +60,9 @@ class _SaleDetailState extends State<SaleDetail> {
                 SizedBox(height: 15),
                 f_discount(widget.entity.discount),
                 SizedBox(height: 20),
-                f_payment(widget.entity.payment),
-                SizedBox(height: 20),
                 f_total(widget.entity.total),
+                SizedBox(height: 20),
+                f_payment(widget.entity.payment),
                 SizedBox(height: 20),
                 f_description(widget.entity.description),
                 SizedBox(height: 20),
@@ -197,7 +197,7 @@ class _SaleDetailState extends State<SaleDetail> {
           style: TextStyle(fontFamily: "Vazir"),
         ),
         Text(
-          "مانده",
+          "جمع",
           style: TextStyle(fontFamily: "Vazir"),
         )
       ],

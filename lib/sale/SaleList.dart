@@ -39,8 +39,11 @@ class _SaleListState extends State<SaleList> {
         });
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'صورتحساب' + '  ' + widget.customer.first_name+' '+widget.customer.last_name),
+        title: Text('صورتحساب' +
+            '  ' +
+            widget.customer.first_name +
+            ' ' +
+            widget.customer.last_name),
         centerTitle: true,
       ),
       body: Container(
@@ -140,25 +143,32 @@ class _SaleListState extends State<SaleList> {
                                                 fontSize: 14),
                                           ),
                                           Text(
+                                            " تعداد : " + (sale.quantity == null ? "0" : sale.quantity).toString() + " قیمت : " + (sale.price == null
+                                                ? "0"
+                                                : formatter.format(
+                                                sale.price))
+                                                .toString(), style: TextStyle(fontFamily: "Vazir", fontSize: 12),
+                                          ),
+                                          Text(
                                             " تخفیف : " +
                                                 (sale.discount == null
                                                         ? "0"
                                                         : formatter.format(
                                                             sale.discount))
                                                     .toString() +
-                                                " پرداختی : " +
-                                                (sale.payment == null
-                                                        ? "0"
-                                                        : formatter.format(
-                                                            sale.payment))
-                                                    .toString() +
-                                                " مانده : " +
+                                                " جمع : " +
                                                 (sale.total == null
                                                         ? "0"
                                                         : formatter.format(
                                                             double.parse(sale
                                                                 .total
                                                                 .toString())))
+                                                    .toString() +
+                                                " پرداختی : " +
+                                                (sale.payment == null
+                                                        ? "0"
+                                                        : formatter.format(
+                                                            sale.payment))
                                                     .toString(),
                                             style: TextStyle(
                                                 fontFamily: "Vazir",
