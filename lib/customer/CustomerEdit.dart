@@ -22,7 +22,7 @@ class CustomerEdit extends StatelessWidget {
 
     DatabaseHelper dbHelper = DatabaseHelper();
     TextEditingController fullNameController = TextEditingController(
-        text: customer?.first_name == null ? "" : "${customer?.first_name}");
+        text: customer?.first_name == null ? "" : "${customer?.first_name}"+" "+"${customer?.last_name}");
     TextEditingController phoneController = TextEditingController(
         text: customer?.phoneNumber == null ? "" : "${customer?.phoneNumber}");
     TextEditingController descriptionController = TextEditingController(

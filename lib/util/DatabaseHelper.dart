@@ -83,7 +83,7 @@ class DatabaseHelper {
 
     final db = await init();
     final maps = await db
-        .query("PERSON"); //query all the rows in a table as an array of maps
+        .query("PERSON",orderBy:"createDate DESC"); //query all the rows in a table as an array of maps
 
     return List.generate(maps.length, (i) {
       //create a list of memos

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:accounting/customer/Customer.dart';
-import 'package:accounting/customer/CustomerEdit.dart';
-import 'package:accounting/sale/SaleList.dart';
-import 'package:accounting/util/DatabaseHelper.dart';
-import 'package:quickalert/quickalert.dart';
+import 'package:quickalert/models/quickalert_type.dart';
+import 'package:quickalert/widgets/quickalert_dialog.dart';
+
+import '../sale/SaleList.dart';
+import '../util/DatabaseHelper.dart';
+import 'Customer.dart';
+import 'CustomerEdit.dart';
 
 class CustomerList extends StatefulWidget {
   const CustomerList({Key? key}) : super(key: key);
@@ -12,18 +14,30 @@ class CustomerList extends StatefulWidget {
   State<CustomerList> createState() => _CustomerListState();
 }
 
-class _CustomerListState extends State<CustomerList>
-    with WidgetsBindingObserver {
+class _CustomerListState extends State<CustomerList> {
   final _formKey = GlobalKey<FormState>();
+  List<Customer>? customers;
   late DatabaseHelper dbHelper;
-  late TextEditingController _searchController;
 
   @override
   void initState() {
     super.initState();
-    dbHelper = DatabaseHelper();
-    _searchController = TextEditingController();
+    initializeData();
   }
+
+  Future<void> initializeData() async {
+    dbHelper = DatabaseHelper();
+
+    // Use 'await' to wait for the result of the asynchronous operation
+    List<Customer> fetchedCustomers = await dbHelper.fetchCustomers();
+
+    setState(() {
+      // Update the state with the fetched data
+      customers = fetchedCustomers;
+    });
+  }
+
+  List<Customer> searchResults = [];
 
   @override
   Widget build(BuildContext context) {
@@ -31,176 +45,178 @@ class _CustomerListState extends State<CustomerList>
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
-          bottom: PreferredSize(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                IconButton(
-                  icon: Icon(
-                    Icons.add_box_outlined,
-                    size: 30,
-                  ),
-                  onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => CustomerEdit()));
-                  },
-                ),
-              ],
-            ),
-            preferredSize: Size.fromHeight(30.0),
-          ),
-          title: Text(
-            "لیست مشتریان",
-            style: TextStyle(fontFamily: "Vazir"),
-          ),
+          title: Text('لیست مشتریان'),
           centerTitle: true,
           actions: [
             IconButton(
-              icon: Icon(Icons.search),
+              icon: Icon(Icons.add, size: 30),
               onPressed: () {
-                // Open search bar
-                showSearch(
-                  context: context,
-                  delegate: CustomerSearchDelegate(dbHelper.fetchCustomers()),
-                );
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => CustomerEdit()),
+                ).then((_) => refreshList());
               },
             ),
           ],
+          bottom: PreferredSize(
+            preferredSize: Size.fromHeight(48.0),
+            child: buildSearchBar(),
+          ),
         ),
-        body: Center(
-          child: FutureBuilder<List<Customer>>(
-            future: dbHelper.fetchCustomers(),
-            builder: (BuildContext context, AsyncSnapshot<List<Customer>> snapshot) {
-              if (!snapshot.hasData) {
-                return Center(
-                  child: Text(""),
-                );
-              }
-              return snapshot.data!.isEmpty
-                  ? Center(
-                child: Text(
-                  "دیتایی برای نمایش وجود ندارد",
-                  style: TextStyle(fontFamily: "Vazir"),
-                ),
-              )
-                  : ListView(
-                children: snapshot.data!.map((customer) {
-                  return GestureDetector(
-                    onLongPress: () {
-                      _showPopupMenu(context, customer, dbHelper);
-                    },
-                    child: Center(
-                      child: Card(
-                        child: ListTile(
-                          title: Container(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Text(
-                                  customer.first_name,
-                                  style: TextStyle(
-                                      fontFamily: "Vazir", fontSize: 18),
-                                ),
-                                SizedBox(
-                                  height: 12,
-                                ),
-                                Text(
-                                  customer.phoneNumber,
-                                  style: TextStyle(
-                                      fontFamily: "Vazir", fontSize: 14),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                }).toList(),
-              );
+        body: customers == null
+            ? Center(child: CircularProgressIndicator())
+            : buildBody(),
+      ),
+    );
+  }
+
+  Widget buildSearchBar() {
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8.0),
+          border: Border.all(color: Colors.grey),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: TextField(
+            onChanged: (query) {
+              setState(() {
+                // Implement your search logic here
+                searchResults = customers!
+                    .where((customer) => (customer.first_name
+                    .toLowerCase()
+                    .contains(query.toLowerCase()) ||
+                    customer.last_name
+                        .toLowerCase()
+                        .contains(query.toLowerCase())))
+                    .toList();
+              });
             },
+            decoration: InputDecoration(
+              hintText: 'Search',
+              border: InputBorder.none,
+              prefixIcon: Icon(Icons.search),
+            ),
           ),
         ),
       ),
     );
   }
 
-  void _showPopupMenu(BuildContext context, Customer customer, DatabaseHelper dbHelper) async {
-    // ... (unchanged)
-  }
-}
-
-class CustomerSearchDelegate extends SearchDelegate<List<Customer>> {
-  final Future<List<Customer>> customers;
-
-  CustomerSearchDelegate(this.customers);
-
-  @override
-  List<Widget> buildActions(BuildContext context) {
-    return [
-      IconButton(
-        icon: Icon(Icons.clear),
-        onPressed: () {
-          query = '';
+  Widget buildBody() {
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: ListView.builder(
+        itemCount:
+        searchResults.isEmpty ? customers!.length : searchResults.length,
+        itemBuilder: (context, index) {
+          final customer =
+          searchResults.isEmpty ? customers![index] : searchResults[index];
+          return ListTile(
+            title: Text(customer.first_name + ' ' + customer.last_name),
+            subtitle: Text(customer.phoneNumber),
+            onLongPress: () {
+              _showPopupMenu(context, customer);
+            },
+            // Add more details or customize the ListTile as needed
+          );
         },
       ),
-    ];
-  }
-
-  @override
-  Widget buildLeading(BuildContext context) {
-    return IconButton(
-      icon: AnimatedIcon(
-        icon: AnimatedIcons.menu_arrow,
-        progress: transitionAnimation,
-      ),
-      onPressed: () {
-        close(context, []);
-      },
     );
   }
 
-  @override
-  Widget buildResults(BuildContext context) {
-    // Show search results based on the query
-    return _buildSearchResults(context);
-  }
-
-  @override
-  Widget buildSuggestions(BuildContext context) {
-    // Show suggestions as the user types
-    return _buildSearchResults(context);
-  }
-
-  Widget _buildSearchResults(BuildContext context) {
-    return FutureBuilder<List<Customer>>(
-      future: customers,
-      builder: (BuildContext context, AsyncSnapshot<List<Customer>> snapshot) {
-        if (!snapshot.hasData) {
-          return Center(child: CircularProgressIndicator());
-        }
-
-        final List<Customer> filteredCustomers = snapshot.data!
-            .where((customer) => customer.first_name.contains(query) || customer.phoneNumber.contains(query))
-            .toList();
-
-        return ListView(
-          children: filteredCustomers.map((customer) {
-            return ListTile(
-              title: Text(customer.first_name),
-              subtitle: Text(customer.phoneNumber),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => CustomerEdit(customer: customer),
-                  ),
-                );
-              },
-            );
-          }).toList(),
+  void _showPopupMenu(BuildContext context, Customer customer) async {
+    final RenderBox overlay =
+    Overlay.of(context)!.context.findRenderObject() as RenderBox;
+    final RelativeRect position = RelativeRect.fromRect(
+      Rect.fromPoints(
+        Offset(10, MediaQuery.of(context).size.height),
+        Offset(10, MediaQuery.of(context).size.height),
+      ),
+      Rect.fromLTRB(0, 0, overlay.size.width, overlay.size.height),
+    );
+    await showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Directionality(
+              textDirection: TextDirection.rtl,
+              child: ListTile(
+                leading: Icon(Icons.account_balance_wallet),
+                title: Text('صورتحساب'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SaleList(customer),
+                    ),
+                  );
+                },
+              ),
+            ),
+            Directionality(
+              textDirection: TextDirection.rtl,
+              child: ListTile(
+                leading: Icon(Icons.edit),
+                title: Text('ویرایش'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CustomerEdit(
+                        customer: customer,
+                      ),
+                    ),
+                  ).then((_) => refreshList());
+                },
+              ),
+            ),
+            Directionality(
+              textDirection: TextDirection.rtl,
+              child: ListTile(
+                leading: Icon(Icons.delete),
+                title: Text('پاک کردن'),
+                onTap: () {
+                  _showDeleteConfirmation(context, customer);
+                },
+              ),
+            )
+          ],
         );
       },
     );
+  }
+
+  void _showDeleteConfirmation(BuildContext context, Customer customer) {
+    QuickAlert.show(
+      type: QuickAlertType.confirm,
+      context: context,
+      title: "",
+      text: "آیا از پاک کردن اطلاعات مطمئن هستید؟",
+      onConfirmBtnTap: () async {
+        try {
+          await dbHelper.deleteCustomer(customer.id.toString());
+          refreshList();
+        } catch (e) {
+          print('Error deleting customer: $e');
+          // Handle the error, e.g., display an error message
+        }
+        Navigator.of(context, rootNavigator: true).pop();
+      },
+      confirmBtnText: "بلی",
+      cancelBtnText: "خیر",
+    );
+  }
+
+  void refreshList() async {
+    List<Customer> updatedCustomers = await dbHelper.fetchCustomers();
+    setState(() {
+      customers = updatedCustomers;
+    });
   }
 }
