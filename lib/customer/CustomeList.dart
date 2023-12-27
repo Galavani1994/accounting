@@ -110,18 +110,38 @@ class _CustomerListState extends State<CustomerList> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: ListView.builder(
-        itemCount:
-        searchResults.isEmpty ? customers!.length : searchResults.length,
+        itemCount: searchResults.isEmpty ? customers!.length : searchResults.length,
         itemBuilder: (context, index) {
-          final customer =
-          searchResults.isEmpty ? customers![index] : searchResults[index];
-          return ListTile(
-            title: Text(customer.first_name + ' ' + customer.last_name),
-            subtitle: Text(customer.phoneNumber),
-            onLongPress: () {
-              _showPopupMenu(context, customer);
-            },
-            // Add more details or customize the ListTile as needed
+          final customer = searchResults.isEmpty ? customers![index] : searchResults[index];
+          return Card(
+            elevation: 2, // Add elevation for a shadow effect
+            margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16), // Adjust margins
+            child: ListTile(
+              title: Text(
+                customer.first_name + ' ' + customer.last_name,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: Colors.black,
+                ),
+              ),
+              subtitle: Text(
+                customer.phoneNumber,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey,
+                ),
+              ),
+              leading: CircleAvatar(
+                // You can customize the leading widget (e.g., display an image)
+                backgroundColor: Colors.blue,
+                child: Icon(Icons.person, color: Colors.white),
+              ),
+              onLongPress: () {
+                _showPopupMenu(context, customer);
+              },
+              // Add more details or customize the ListTile as needed
+            ),
           );
         },
       ),
