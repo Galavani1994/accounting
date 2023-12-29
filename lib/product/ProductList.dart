@@ -40,8 +40,9 @@ class _ProductListState extends State<ProductList> {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
-          title: Text('لیست محصولات'),
+          title: Text('لیست محصولات',style: TextStyle(fontFamily: 'Vazir'),),
           centerTitle: true,
+          backgroundColor: Colors.blue,
           actions: [
             IconButton(
               icon: Icon(Icons.add, size: 30),
@@ -66,29 +67,32 @@ class _ProductListState extends State<ProductList> {
   }
 
   Widget buildSearchBar() {
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(8.0),
-          border: Border.all(color: Colors.grey),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: TextField(
-            onChanged: (query) {
-              setState(() {
-                // Implement your search logic here
-                searchResults = products!
-                    .where((product) => (product.fullName.toLowerCase().contains(query.toLowerCase())))
-                    .toList();
-              });
-            },
-            decoration: InputDecoration(
-              hintText: 'Search',
-              border: InputBorder.none,
-              prefixIcon: Icon(Icons.search),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Directionality(
+        textDirection: TextDirection.rtl,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8.0),
+            border: Border.all(color: Colors.grey),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: TextField(
+              onChanged: (query) {
+                setState(() {
+                  // Implement your search logic here
+                  searchResults = products!
+                      .where((product) => (product.fullName.toLowerCase().contains(query.toLowerCase())))
+                      .toList();
+                });
+              },
+              decoration: InputDecoration(
+                hintText: 'Search',
+                border: InputBorder.none,
+                prefixIcon: Icon(Icons.search),
+              ),
             ),
           ),
         ),

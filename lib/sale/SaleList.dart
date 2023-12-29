@@ -45,6 +45,7 @@ class _SaleListState extends State<SaleList> {
             ' ' +
             widget.customer.last_name),
         centerTitle: true,
+        backgroundColor: Colors.blue,
       ),
       body: Container(
         height: MediaQuery.of(context).size.height - 270,

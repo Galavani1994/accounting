@@ -1,4 +1,5 @@
 import 'package:accounting/sale/sale.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
@@ -31,6 +32,9 @@ class _AddState extends State<Add> {
   TextEditingController dateTimeController = TextEditingController(
       text: Jalali.fromDateTime(DateTime.now()).formatCompactDate().toString());
 
+  final TextEditingController textEditingController = TextEditingController();
+  final TextEditingController textProductController = TextEditingController();
+
   var selectedCustomer;
   var selectedProduct;
   bool isChecked = false;
@@ -46,7 +50,7 @@ class _AddState extends State<Add> {
           child: Column(
             children: [
               Container(
-                height: MediaQuery.of(context).size.height-350,
+                height: MediaQuery.of(context).size.height - 350,
                 child: SingleChildScrollView(
                   child: Directionality(
                     textDirection: TextDirection.rtl,
@@ -60,11 +64,11 @@ class _AddState extends State<Add> {
                           controller: dateTimeController,
                           decoration: InputDecoration(
                               border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10)),
                               ),
                               labelText: "تاریخ",
-                          constraints: BoxConstraints.tightFor(height: 50)
-                          ),
+                              constraints: BoxConstraints.tightFor(height: 50)),
                         ),
                         SizedBox(height: 15),
                         f_customer(),
@@ -104,7 +108,6 @@ class _AddState extends State<Add> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-
                     ElevatedButton(
                         onPressed: () {
                           save(context);
@@ -134,18 +137,102 @@ class _AddState extends State<Add> {
   Widget f_customer() {
     DatabaseHelper dbHelper = DatabaseHelper();
     var fetchCustomers = dbHelper.fetchCustomers();
-    return DropdownSearch<Customer>(
-      asyncItems: (String filter) => fetchCustomers,
-      itemAsString: (Customer u) => u.first_name+u.last_name,
-      onChanged: (Customer? data) => selectedCustomer = data?.id,
-      dropdownDecoratorProps: DropDownDecoratorProps(
-        dropdownSearchDecoration: InputDecoration(
-          labelText: "مشتری",
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(10))),
-          constraints: BoxConstraints.tightFor(height: 60)
-
-        ),
+    return Visibility(
+      visible: true,
+      child: FutureBuilder<List<Customer>>(
+        future: fetchCustomers,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return CircularProgressIndicator(); // Loading indicator while fetching data
+          } else if (snapshot.hasError) {
+            return Text(
+                'Error: ${snapshot.error}'); // Display an error message if an error occurs
+          } else {
+            List<Customer>? items = snapshot.data;
+            return DropdownButtonHideUnderline(
+              child: DropdownButton2<int>(
+                isExpanded: true,
+                hint: Text(
+                  'انتخاب مشتری',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Theme.of(context).hintColor,
+                  ),
+                ),
+                items: items
+                    ?.map((item) => DropdownMenuItem(
+                          value: item.id,
+                          child: Text(
+                            item.first_name,
+                            style: const TextStyle(
+                              fontSize: 14,
+                            ),
+                          ),
+                        ))
+                    .toList(),
+                value: selectedCustomer,
+                onChanged: (value) {
+                  setState(() {
+                    selectedCustomer = value;
+                  });
+                },
+                buttonStyleData: const ButtonStyleData(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  height: 50,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(14)),
+                    color: Colors.black12,
+                  ),
+                ),
+                dropdownStyleData: const DropdownStyleData(
+                  maxHeight: 200,
+                ),
+                menuItemStyleData: const MenuItemStyleData(
+                  height: 40,
+                ),
+                dropdownSearchData: DropdownSearchData(
+                  searchController: textEditingController,
+                  searchInnerWidgetHeight: 50,
+                  searchInnerWidget: Container(
+                    height: 60,
+                    padding: const EdgeInsets.only(
+                      top: 8,
+                      bottom: 4,
+                      right: 8,
+                      left: 8,
+                    ),
+                    child: TextFormField(
+                      expands: true,
+                      maxLines: null,
+                      controller: textEditingController,
+                      decoration: InputDecoration(
+                        isDense: true,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 8,
+                        ),
+                        hintText: 'Search for an item...',
+                        hintStyle: const TextStyle(fontSize: 12),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                  ),
+                  searchMatchFn: (item, searchValue) {
+                    return item.value.toString().contains(searchValue);
+                  },
+                ),
+                //This to clear the search value when you close the menu
+                onMenuStateChange: (isOpen) {
+                  if (!isOpen) {
+                    textEditingController.clear();
+                  }
+                },
+              ),
+            );
+          }
+        },
       ),
     );
   }
@@ -155,22 +242,105 @@ class _AddState extends State<Add> {
     var fetchProducts = service.fetchProducts();
     return Visibility(
       visible: !isChecked,
-      child: DropdownSearch<Product>(
-        asyncItems: (String filter) => fetchProducts,
-        itemAsString: (Product u) => u.fullName,
-        onChanged: (Product? data) => selectedProduct = data?.id,
-        dropdownDecoratorProps: DropDownDecoratorProps(
-          dropdownSearchDecoration: InputDecoration(
-            labelText: "محصول",
-            border: OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(10)))
-          ),
-        ),
+      child: FutureBuilder<List<Product>>(
+        future: fetchProducts,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return CircularProgressIndicator(); // Loading indicator while fetching data
+          } else if (snapshot.hasError) {
+            return Text(
+                'Error: ${snapshot.error}'); // Display an error message if an error occurs
+          } else {
+            List<Product>? items = snapshot.data;
+            return DropdownButtonHideUnderline(
+              child: DropdownButton2<int>(
+                isExpanded: true,
+                hint: Text(
+                  'انتخاب محصول',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Theme.of(context).hintColor,
+                  ),
+                ),
+                items: items
+                    ?.map((item) => DropdownMenuItem(
+                          value: item.id,
+                          child: Text(
+                            item.fullName,
+                            style: const TextStyle(
+                              fontSize: 14,
+                            ),
+                          ),
+                        ))
+                    .toList(),
+                value: selectedProduct,
+                onChanged: (value) {
+                  setState(() {
+                    selectedProduct = value;
+                  });
+                },
+                buttonStyleData: const ButtonStyleData(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  height: 50,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(14)),
+                    color: Colors.black12,
+                  ),
+                ),
+                dropdownStyleData: const DropdownStyleData(
+                  maxHeight: 200,
+                ),
+                menuItemStyleData: const MenuItemStyleData(
+                  height: 40,
+                ),
+                dropdownSearchData: DropdownSearchData(
+                  searchController: textProductController,
+                  searchInnerWidgetHeight: 50,
+                  searchInnerWidget: Container(
+                    height: 60,
+                    padding: const EdgeInsets.only(
+                      top: 8,
+                      bottom: 4,
+                      right: 8,
+                      left: 8,
+                    ),
+                    child: TextFormField(
+                      expands: true,
+                      maxLines: null,
+                      controller: textProductController,
+                      decoration: InputDecoration(
+                        isDense: true,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 8,
+                        ),
+                        hintText: 'Search for an item...',
+                        hintStyle: const TextStyle(fontSize: 12),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                  ),
+                  searchMatchFn: (item, searchValue) {
+                    return item.value.toString().contains(searchValue);
+                  },
+                ),
+                //This to clear the search value when you close the menu
+                onMenuStateChange: (isOpen) {
+                  if (!isOpen) {
+                    textProductController.clear();
+                  }
+                },
+              ),
+            );
+          }
+        },
       ),
     );
   }
 
-  Widget f_checkBox(){
+  Widget f_checkBox() {
     return Row(
       children: [
         Checkbox(
@@ -187,7 +357,8 @@ class _AddState extends State<Add> {
       ],
     );
   }
-  Widget f_product_title(){
+
+  Widget f_product_title() {
     return Visibility(
       visible: isChecked,
       child: TextFormField(
@@ -209,7 +380,7 @@ class _AddState extends State<Add> {
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(10))),
           labelText: 'اندازه',
-          constraints: BoxConstraints.tightFor(width: 120,height: 50)),
+          constraints: BoxConstraints.tightFor(width: 120, height: 50)),
     );
   }
 
@@ -222,7 +393,7 @@ class _AddState extends State<Add> {
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(10))),
           labelText: 'قیمت',
-          constraints: BoxConstraints.tightFor(width: 120,height: 50)),
+          constraints: BoxConstraints.tightFor(width: 120, height: 50)),
       inputFormatters: [ThousandsSeparatorInputFormatter()],
     );
   }
@@ -244,7 +415,6 @@ class _AddState extends State<Add> {
 
   Widget f_payment() {
     return TextFormField(
-
       controller: paymentController,
       keyboardType: TextInputType.number,
       decoration: const InputDecoration(
@@ -264,7 +434,7 @@ class _AddState extends State<Add> {
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(10))),
           labelText: "جمع",
-      constraints: BoxConstraints.tightFor(height: 50)),
+          constraints: BoxConstraints.tightFor(height: 50)),
       keyboardType: TextInputType.number,
       inputFormatters: [ThousandsSeparatorInputFormatter()],
     );
@@ -363,20 +533,32 @@ class _AddState extends State<Add> {
           ? "0"
           : totalController.text.replaceAll(",", ""),
     );
-    try{
-      saleService.addItem(sl);
-    }catch(e){
+    try {
+      if (selectedCustomer != null) {
+        saleService.addItem(sl);
+        showAlert(context);
+      } else {
+        QuickAlert.show(
+            context: context,
+            title: "!...اخطار",
+            text: "مشتری جهت ثبت انتخاب نشده است",
+            type: QuickAlertType.error,
+            confirmBtnText: 'تایید',
+            borderRadius: 12,
+            width: 60);
+      }
+    } catch (e) {
       print(e.toString());
     }
-    showAlert(context);
     FocusScope.of(context).unfocus();
   }
 
   void showAlert(BuildContext context) {
     QuickAlert.show(
-        context: context,
-        title: "",
-        text: "عملیات با موفقیت انجام شد",
-        type: QuickAlertType.success);
+      context: context,
+      title: "",
+      text: "عملیات با موفقیت انجام شد",
+      type: QuickAlertType.success,
+    );
   }
 }

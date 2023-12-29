@@ -13,7 +13,8 @@ class _SettingState extends State<Setting> {
     return Scaffold(
       appBar:AppBar(
         centerTitle: true,
-        title: Text('تنظیمات'),
+        title: Text('تنظیمات',style: TextStyle(fontFamily: 'Vazir')),
+        backgroundColor: Colors.blue,
       ),
       body: Text('به زودی'),
     );

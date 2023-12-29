@@ -2,24 +2,25 @@ import 'package:flutter/material.dart';
 
 import 'SimpleChart.dart';
 
-class Report extends StatefulWidget {
-  const Report({Key? key}) : super(key: key);
-
-  @override
-  State<Report> createState() => _ReportState();
-}
-
-class _ReportState extends State<Report> {
+class Report extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('گزارشات مالی',style: TextStyle(fontFamily: 'Vazir')),
-        centerTitle: true,
-      ),
+      appBar: buildDynamicAppBar(),
       body: Center(
         child: SimpleChart(),
       ),
+    );
+  }
+
+  PreferredSizeWidget buildDynamicAppBar() {
+    return AppBar(
+      title: Text(
+        'گزارشات مالی',
+        style: TextStyle(fontFamily: 'Vazir'),
+      ),
+      centerTitle: true,
+      backgroundColor: Colors.blue,
     );
   }
 }

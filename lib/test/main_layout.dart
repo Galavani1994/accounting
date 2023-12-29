@@ -61,35 +61,31 @@ class _MainLayoutState extends State<MainLayout> {
               ),
             ],
           ),
-          bottomNavigationBar: BottomAppBar(
-            shape: const CircularNotchedRectangle(),
-            clipBehavior: Clip.antiAlias,
-            child: BottomNavigationBar(
-              backgroundColor: Colors.white,
-              currentIndex: _currentIndex,
-              onTap: (index) {
-                setState(() {
-                  _currentIndex = index;
-                });
-              },
-              type: BottomNavigationBarType.fixed,
-              selectedItemColor: Colors.red[900],
-              unselectedItemColor: Colors.grey,
-              showSelectedLabels: true,
-              showUnselectedLabels: true,
-              items: const <BottomNavigationBarItem>[
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.production_quantity_limits_sharp),
-                  label: 'محصولات',
-                ),
-                BottomNavigationBarItem(
-                    icon: Icon(Icons.person_add_alt_rounded), label: 'مشتریان'),
-                BottomNavigationBarItem(
-                    icon: Icon(Icons.report), label: 'گزارشات'),
-                BottomNavigationBarItem(
-                    icon: Icon(Icons.settings), label: 'تنظیمات'),
-              ],
-            ),
+          bottomNavigationBar: BottomNavigationBar(
+            backgroundColor: Colors.white,
+            currentIndex: _currentIndex,
+            onTap: (index) {
+              setState(() {
+                _currentIndex = index;
+              });
+            },
+            type: BottomNavigationBarType.fixed,
+            selectedItemColor: Colors.red[900],
+            unselectedItemColor: Colors.grey,
+            showSelectedLabels: true,
+            showUnselectedLabels: true,
+            items: const <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                icon: Icon(Icons.production_quantity_limits_sharp),
+                label: 'محصولات',
+              ),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.person_add_alt_rounded), label: 'مشتریان'),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.report), label: 'گزارشات'),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.settings), label: 'تنظیمات'),
+            ],
           ),
           floatingActionButton: FloatingActionButton(
               backgroundColor: Colors.red[900],

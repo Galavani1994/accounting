@@ -39,6 +39,7 @@ class CustomerEdit extends StatelessWidget {
             style: TextStyle(fontFamily: "Vazir"),
           ),
           centerTitle: true,
+          backgroundColor: Colors.blue,
         ),
         body: Padding(
           padding: const EdgeInsets.all(20.0),
