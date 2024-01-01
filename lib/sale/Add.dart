@@ -2,6 +2,7 @@ import 'package:accounting/sale/sale.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:quickalert/quickalert.dart';
 
@@ -34,6 +35,8 @@ class _AddState extends State<Add> {
 
   final TextEditingController textEditingController = TextEditingController();
   final TextEditingController textProductController = TextEditingController();
+
+  var selectedValue;
 
   var selectedCustomer;
   var selectedProduct;
@@ -73,7 +76,7 @@ class _AddState extends State<Add> {
                         SizedBox(height: 15),
                         f_customer(),
                         SizedBox(height: 15),
-                        f_product(),
+                        //f_product(),
                         f_checkBox(),
                         SizedBox(height: 15),
                         f_product_title(),
@@ -134,20 +137,16 @@ class _AddState extends State<Add> {
     );
   }
 
-  Widget f_customer() {
+  Widget f_customer1() {
     DatabaseHelper dbHelper = DatabaseHelper();
     var fetchCustomers = dbHelper.fetchCustomers();
-    return Visibility(
-      visible: true,
-      child: FutureBuilder<List<Customer>>(
+
+    late int selectedCustomer;
+
+    return FutureBuilder<List<Customer>>(
         future: fetchCustomers,
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator(); // Loading indicator while fetching data
-          } else if (snapshot.hasError) {
-            return Text(
-                'Error: ${snapshot.error}'); // Display an error message if an error occurs
-          } else {
+
             List<Customer>? items = snapshot.data;
             return DropdownButtonHideUnderline(
               child: DropdownButton2<int>(
@@ -160,20 +159,20 @@ class _AddState extends State<Add> {
                   ),
                 ),
                 items: items
-                    ?.map((item) => DropdownMenuItem(
-                          value: item.id,
-                          child: Text(
-                            item.first_name,
-                            style: const TextStyle(
-                              fontSize: 14,
-                            ),
-                          ),
-                        ))
+                    ?.map((item) => DropdownMenuItem<int>(
+                  value: item.id,
+                  child: Text(
+                    item.first_name,
+                    style: const TextStyle(
+                      fontSize: 14,
+                    ),
+                  ),
+                ))
                     .toList(),
-                value: selectedCustomer,
                 onChanged: (value) {
+                  // Move the setState call outside of the build method
                   setState(() {
-                    selectedCustomer = value;
+                    selectedCustomer = value!;
                   });
                 },
                 buttonStyleData: const ButtonStyleData(
@@ -193,51 +192,127 @@ class _AddState extends State<Add> {
                 dropdownSearchData: DropdownSearchData(
                   searchController: textEditingController,
                   searchInnerWidgetHeight: 50,
-                  searchInnerWidget: Container(
-                    height: 60,
-                    padding: const EdgeInsets.only(
-                      top: 8,
-                      bottom: 4,
-                      right: 8,
-                      left: 8,
-                    ),
-                    child: TextFormField(
-                      expands: true,
-                      maxLines: null,
-                      controller: textEditingController,
-                      decoration: InputDecoration(
-                        isDense: true,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 8,
-                        ),
-                        hintText: 'Search for an item...',
-                        hintStyle: const TextStyle(fontSize: 12),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
-                  ),
+                  searchInnerWidget: buildDropdownSearchInnerWidget(),
                   searchMatchFn: (item, searchValue) {
                     return item.value.toString().contains(searchValue);
                   },
                 ),
-                //This to clear the search value when you close the menu
-                onMenuStateChange: (isOpen) {
-                  if (!isOpen) {
-                    textEditingController.clear();
-                  }
-                },
               ),
             );
-          }
-        },
+        });
+  }
+  Widget f_customer(){
+    DatabaseHelper dbHelper = DatabaseHelper();
+    var fetchCustomers = dbHelper.fetchCustomers();
+    return FutureBuilder<List<Customer>>(
+      future: fetchCustomers,
+      builder: (context,snapshot) {
+        List<Customer>? items = snapshot.data;
+        return DropdownButtonHideUnderline(
+          child: DropdownButton2<Customer>(
+            isExpanded: true,
+            hint: Text(
+              'Select Item',
+              style: TextStyle(
+                fontSize: 14,
+                color: Theme
+                    .of(context)
+                    .hintColor,
+              ),
+            ),
+            items: items!.map((item) => DropdownMenuItem(value: item, child: Text(item.first_name, style: const TextStyle(fontSize: 14,),),)).toList(),
+            value: selectedValue,
+            onChanged: (value) {
+              setState(() {
+                selectedValue = value;
+              });
+            },
+            buttonStyleData: const ButtonStyleData(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              height: 40,
+              width: 200,
+            ),
+            dropdownStyleData: const DropdownStyleData(
+              maxHeight: 200,
+            ),
+            menuItemStyleData: const MenuItemStyleData(
+              height: 40,
+            ),
+            dropdownSearchData: DropdownSearchData(
+              searchController: textEditingController,
+              searchInnerWidgetHeight: 50,
+              searchInnerWidget: Container(
+                height: 50,
+                padding: const EdgeInsets.only(
+                  top: 8,
+                  bottom: 4,
+                  right: 8,
+                  left: 8,
+                ),
+                child: TextFormField(
+                  expands: true,
+                  maxLines: null,
+                  controller: textEditingController,
+                  decoration: InputDecoration(
+                    isDense: true,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 8,
+                    ),
+                    hintText: 'Search for an item...',
+                    hintStyle: const TextStyle(fontSize: 12),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                ),
+              ),
+              searchMatchFn: (item, searchValue) {
+                return item.value!.first_name.toString().contains(searchValue);
+              },
+            ),
+            //This to clear the search value when you close the menu
+            onMenuStateChange: (isOpen) {
+              if (!isOpen) {
+                textEditingController.clear();
+              }
+            },
+          ),
+        );
+      });
+  }
+
+
+  Widget buildDropdownSearchInnerWidget() {
+    return Container(
+      height: 60,
+      padding: const EdgeInsets.only(
+        top: 8,
+        bottom: 4,
+        right: 8,
+        left: 8,
+      ),
+      child: TextFormField(
+        expands: true,
+        maxLines: null,
+        controller: textEditingController,
+        decoration: InputDecoration(
+          isDense: true,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 10,
+            vertical: 8,
+          ),
+          hintText: 'Search for an item...',
+          hintStyle: const TextStyle(fontSize: 12),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
       ),
     );
   }
 
-  Widget f_product() {
+  /*Widget f_product() {
     ProductService service = ProductService();
     var fetchProducts = service.fetchProducts();
     return Visibility(
@@ -338,7 +413,7 @@ class _AddState extends State<Add> {
         },
       ),
     );
-  }
+  }*/
 
   Widget f_checkBox() {
     return Row(
