@@ -76,7 +76,7 @@ class _AddState extends State<Add> {
                         SizedBox(height: 15),
                         f_customer(),
                         SizedBox(height: 15),
-                        //f_product(),
+                        f_product(),
                         f_checkBox(),
                         SizedBox(height: 15),
                         f_product_title(),
@@ -137,100 +137,51 @@ class _AddState extends State<Add> {
     );
   }
 
-  Widget f_customer1() {
+  Widget f_customer() {
     DatabaseHelper dbHelper = DatabaseHelper();
     var fetchCustomers = dbHelper.fetchCustomers();
 
-    late int selectedCustomer;
-
-    return FutureBuilder<List<Customer>>(
-        future: fetchCustomers,
-        builder: (context, snapshot) {
-
-            List<Customer>? items = snapshot.data;
-            return DropdownButtonHideUnderline(
-              child: DropdownButton2<int>(
-                isExpanded: true,
-                hint: Text(
-                  'انتخاب مشتری',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Theme.of(context).hintColor,
-                  ),
-                ),
-                items: items
-                    ?.map((item) => DropdownMenuItem<int>(
-                  value: item.id,
-                  child: Text(
-                    item.first_name,
-                    style: const TextStyle(
-                      fontSize: 14,
-                    ),
-                  ),
-                ))
-                    .toList(),
-                onChanged: (value) {
-                  // Move the setState call outside of the build method
-                  setState(() {
-                    selectedCustomer = value!;
-                  });
-                },
-                buttonStyleData: const ButtonStyleData(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  height: 50,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(14)),
-                    color: Colors.black12,
-                  ),
-                ),
-                dropdownStyleData: const DropdownStyleData(
-                  maxHeight: 200,
-                ),
-                menuItemStyleData: const MenuItemStyleData(
-                  height: 40,
-                ),
-                dropdownSearchData: DropdownSearchData(
-                  searchController: textEditingController,
-                  searchInnerWidgetHeight: 50,
-                  searchInnerWidget: buildDropdownSearchInnerWidget(),
-                  searchMatchFn: (item, searchValue) {
-                    return item.value.toString().contains(searchValue);
-                  },
-                ),
-              ),
-            );
-        });
-  }
-  Widget f_customer(){
-    DatabaseHelper dbHelper = DatabaseHelper();
-    var fetchCustomers = dbHelper.fetchCustomers();
     return FutureBuilder<List<Customer>>(
       future: fetchCustomers,
-      builder: (context,snapshot) {
+      builder: (context, snapshot) {
         List<Customer>? items = snapshot.data;
+
         return DropdownButtonHideUnderline(
-          child: DropdownButton2<Customer>(
+          child: DropdownButton2<String>(
             isExpanded: true,
             hint: Text(
-              'Select Item',
+              'انتخاب مشتری',
               style: TextStyle(
                 fontSize: 14,
-                color: Theme
-                    .of(context)
-                    .hintColor,
+                color: Theme.of(context).hintColor,
               ),
             ),
-            items: items!.map((item) => DropdownMenuItem(value: item, child: Text(item.first_name, style: const TextStyle(fontSize: 14,),),)).toList(),
-            value: selectedValue,
+            items: items!
+                .map((item) => DropdownMenuItem(
+                      value: item.id.toString() +
+                          "-" +
+                          item.first_name +
+                          "-" +
+                          item.last_name,
+                      child: Text(
+                        item.first_name,
+                        style: const TextStyle(fontSize: 14),
+                      ),
+                    ))
+                .toList(),
+            value: selectedCustomer,
             onChanged: (value) {
               setState(() {
-                selectedValue = value;
+                selectedCustomer = value;
               });
             },
             buttonStyleData: const ButtonStyleData(
               padding: EdgeInsets.symmetric(horizontal: 16),
               height: 40,
-              width: 200,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(14)),
+                color: Colors.black12,
+              ),
             ),
             dropdownStyleData: const DropdownStyleData(
               maxHeight: 200,
@@ -268,10 +219,10 @@ class _AddState extends State<Add> {
                 ),
               ),
               searchMatchFn: (item, searchValue) {
-                return item.value!.first_name.toString().contains(searchValue);
+                return item.value.toString().contains(searchValue);
               },
             ),
-            //This to clear the search value when you close the menu
+            // This to clear the search value when you close the menu
             onMenuStateChange: (isOpen) {
               if (!isOpen) {
                 textEditingController.clear();
@@ -279,40 +230,11 @@ class _AddState extends State<Add> {
             },
           ),
         );
-      });
-  }
-
-
-  Widget buildDropdownSearchInnerWidget() {
-    return Container(
-      height: 60,
-      padding: const EdgeInsets.only(
-        top: 8,
-        bottom: 4,
-        right: 8,
-        left: 8,
-      ),
-      child: TextFormField(
-        expands: true,
-        maxLines: null,
-        controller: textEditingController,
-        decoration: InputDecoration(
-          isDense: true,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 10,
-            vertical: 8,
-          ),
-          hintText: 'Search for an item...',
-          hintStyle: const TextStyle(fontSize: 12),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-        ),
-      ),
+      },
     );
   }
 
-  /*Widget f_product() {
+  Widget f_product() {
     ProductService service = ProductService();
     var fetchProducts = service.fetchProducts();
     return Visibility(
@@ -320,100 +242,92 @@ class _AddState extends State<Add> {
       child: FutureBuilder<List<Product>>(
         future: fetchProducts,
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator(); // Loading indicator while fetching data
-          } else if (snapshot.hasError) {
-            return Text(
-                'Error: ${snapshot.error}'); // Display an error message if an error occurs
-          } else {
-            List<Product>? items = snapshot.data;
-            return DropdownButtonHideUnderline(
-              child: DropdownButton2<int>(
-                isExpanded: true,
-                hint: Text(
-                  'انتخاب محصول',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Theme.of(context).hintColor,
-                  ),
+          List<Product>? items = snapshot.data;
+
+          return DropdownButtonHideUnderline(
+            child: DropdownButton2<String>(
+              isExpanded: true,
+              hint: Text(
+                'انتخاب محصول',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Theme.of(context).hintColor,
                 ),
-                items: items
-                    ?.map((item) => DropdownMenuItem(
-                          value: item.id,
-                          child: Text(
-                            item.fullName,
-                            style: const TextStyle(
-                              fontSize: 14,
-                            ),
-                          ),
-                        ))
-                    .toList(),
-                value: selectedProduct,
-                onChanged: (value) {
-                  setState(() {
-                    selectedProduct = value;
-                  });
-                },
-                buttonStyleData: const ButtonStyleData(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
+              ),
+              items: items!
+                  .map((item) => DropdownMenuItem(
+                        value: item.id.toString() + "-" + item.fullName,
+                        child: Text(
+                          item.fullName,
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                      ))
+                  .toList(),
+              value: selectedProduct,
+              onChanged: (value) {
+                setState(() {
+                  selectedProduct = value;
+                });
+              },
+              buttonStyleData: const ButtonStyleData(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                height: 40,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(14)),
+                  color: Colors.black12,
+                ),
+              ),
+              dropdownStyleData: const DropdownStyleData(
+                maxHeight: 200,
+              ),
+              menuItemStyleData: const MenuItemStyleData(
+                height: 40,
+              ),
+              dropdownSearchData: DropdownSearchData(
+                searchController: textProductController,
+                searchInnerWidgetHeight: 50,
+                searchInnerWidget: Container(
                   height: 50,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(14)),
-                    color: Colors.black12,
+                  padding: const EdgeInsets.only(
+                    top: 8,
+                    bottom: 4,
+                    right: 8,
+                    left: 8,
                   ),
-                ),
-                dropdownStyleData: const DropdownStyleData(
-                  maxHeight: 200,
-                ),
-                menuItemStyleData: const MenuItemStyleData(
-                  height: 40,
-                ),
-                dropdownSearchData: DropdownSearchData(
-                  searchController: textProductController,
-                  searchInnerWidgetHeight: 50,
-                  searchInnerWidget: Container(
-                    height: 60,
-                    padding: const EdgeInsets.only(
-                      top: 8,
-                      bottom: 4,
-                      right: 8,
-                      left: 8,
-                    ),
-                    child: TextFormField(
-                      expands: true,
-                      maxLines: null,
-                      controller: textProductController,
-                      decoration: InputDecoration(
-                        isDense: true,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 8,
-                        ),
-                        hintText: 'Search for an item...',
-                        hintStyle: const TextStyle(fontSize: 12),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
+                  child: TextFormField(
+                    expands: true,
+                    maxLines: null,
+                    controller: textProductController,
+                    decoration: InputDecoration(
+                      isDense: true,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 8,
+                      ),
+                      hintText: 'Search for an item...',
+                      hintStyle: const TextStyle(fontSize: 12),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
                       ),
                     ),
                   ),
-                  searchMatchFn: (item, searchValue) {
-                    return item.value.toString().contains(searchValue);
-                  },
                 ),
-                //This to clear the search value when you close the menu
-                onMenuStateChange: (isOpen) {
-                  if (!isOpen) {
-                    textProductController.clear();
-                  }
+                searchMatchFn: (item, searchValue) {
+                  return item.value.toString().contains(searchValue);
                 },
               ),
-            );
-          }
+              // This to clear the search value when you close the menu
+              onMenuStateChange: (isOpen) {
+                if (!isOpen) {
+                  textProductController.clear();
+                }
+              },
+            ),
+          );
         },
       ),
     );
-  }*/
+  }
 
   Widget f_checkBox() {
     return Row(
@@ -589,9 +503,13 @@ class _AddState extends State<Add> {
       description: descriptionController.text,
       createDate: dateTimeController.text,
       updateDate: DateTime.now().toString(),
-      productId: selectedProduct,
+      productId: selectedProduct == null
+          ? null
+          : int.parse(selectedProduct.split('-')[0]),
       productTitle: productTitleController.text,
-      customerId: selectedCustomer,
+      customerId: selectedCustomer == null
+          ? null
+          : int.parse(selectedCustomer.split('-')[0]),
       quantity: quantityController.text.isEmpty
           ? 0
           : double.parse(quantityController.text),
