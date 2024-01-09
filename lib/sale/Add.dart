@@ -3,6 +3,7 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:quickalert/quickalert.dart';
 
@@ -41,6 +42,7 @@ class _AddState extends State<Add> {
   var selectedCustomer;
   var selectedProduct;
   bool isChecked = false;
+  bool isCreditor = false;
 
   SaleService saleService = SaleService();
 
@@ -80,6 +82,7 @@ class _AddState extends State<Add> {
                         f_checkBox(),
                         SizedBox(height: 15),
                         f_product_title(),
+                        //f_creditor_checkBox(),
                         SizedBox(height: 15),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -156,8 +159,8 @@ class _AddState extends State<Add> {
                 color: Theme.of(context).hintColor,
               ),
             ),
-            items: items!
-                .map((item) => DropdownMenuItem(
+            items: items
+                ?.map((item) => DropdownMenuItem(
                       value: item.id.toString() +
                           "-" +
                           item.first_name +
@@ -237,12 +240,13 @@ class _AddState extends State<Add> {
   Widget f_product() {
     ProductService service = ProductService();
     var fetchProducts = service.fetchProducts();
+    List<Product>? items = [];
     return Visibility(
       visible: !isChecked,
       child: FutureBuilder<List<Product>>(
         future: fetchProducts,
         builder: (context, snapshot) {
-          List<Product>? items = snapshot.data;
+          items = snapshot.data;
 
           return DropdownButtonHideUnderline(
             child: DropdownButton2<String>(
@@ -254,8 +258,8 @@ class _AddState extends State<Add> {
                   color: Theme.of(context).hintColor,
                 ),
               ),
-              items: items!
-                  .map((item) => DropdownMenuItem(
+              items: items
+                  ?.map((item) => DropdownMenuItem(
                         value: item.id.toString() + "-" + item.fullName,
                         child: Text(
                           item.fullName,
@@ -343,6 +347,24 @@ class _AddState extends State<Add> {
           },
         ),
         Text('محصول یافت نشد'),
+      ],
+    );
+  }
+
+  Widget f_creditor_checkBox() {
+    return Row(
+      children: [
+        Checkbox(
+          checkColor: Colors.white,
+          fillColor: MaterialStateProperty.resolveWith(getColor),
+          value: isCreditor,
+          onChanged: (bool? value) {
+            setState(() {
+              isCreditor = value!;
+            });
+          },
+        ),
+        Text('بستانکار'),
       ],
     );
   }
@@ -529,21 +551,36 @@ class _AddState extends State<Add> {
     try {
       if (selectedCustomer != null) {
         saleService.addItem(sl);
+        clearForm();
         showAlert(context);
       } else {
-        QuickAlert.show(
+        /*QuickAlert.show(
             context: context,
             title: "!...اخطار",
             text: "مشتری جهت ثبت انتخاب نشده است",
             type: QuickAlertType.error,
             confirmBtnText: 'تایید',
             borderRadius: 12,
-            width: 60);
+            width: 60);*/
+        Fluttertoast.showToast(
+            msg: "مشتری جهت ثبت انتخاب نشده است", timeInSecForIosWeb: 5);
       }
     } catch (e) {
       print(e.toString());
     }
     FocusScope.of(context).unfocus();
+  }
+
+  void clearForm() {
+    isChecked = false;
+    productTitleController.clear();
+    selectedProduct = null;
+    quantityController.clear();
+    feeController.clear();
+    discountController.clear();
+    paymentController.clear();
+    totalController.clear();
+    descriptionController.clear();
   }
 
   void showAlert(BuildContext context) {

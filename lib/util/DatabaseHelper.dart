@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:accounting/customer/Customer.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DatabaseHelper {
@@ -15,8 +17,42 @@ class DatabaseHelper {
     return await openDatabase(
         //open the database or create a database if there isn't any
         path,
-        version: 10,
+        version: 11,
         onCreate: _onCreate);
+  }
+
+  Future<bool> backupDatabase() async {
+    try {
+      PermissionStatus status = await Permission.storage.request();
+
+      if (status.isGranted) {
+        Directory directory = await getApplicationDocumentsDirectory();
+        final path = join(directory.path, "accounting.db");
+        Database database = await openDatabase(path, version: 11, onCreate: _onCreate);
+
+        String folderName = 'acc_back';
+        Directory customFolder = Directory("storage/emulated/0/$folderName");
+        await customFolder.create(recursive: true);
+
+        String backupPath = join(customFolder.path, 'backup_accounting.db');
+
+        await File(database.path).copy(backupPath);
+
+        // Close the database to release resources
+        await database.close();
+
+        print("Backup successful. Path: $backupPath");
+        return true;
+      } else {
+        // Display a toast message for permission not granted
+        Fluttertoast.showToast(msg: "Storage permission not granted.",timeInSecForIosWeb: 5);
+        return false;
+      }
+    } catch (e) {
+      Fluttertoast.showToast(msg: "Backup failed: $e");
+      print("Backup failed: $e");
+      return false;
+    }
   }
 
   Future _onCreate(Database db, int version) async {
@@ -55,6 +91,7 @@ class DatabaseHelper {
     total TEXT,
     discount INTEGER,
     payment INTEGER,
+    creditor INTEGER,
     FOREIGN KEY (productId) REFERENCES PRODUCT (id),
     FOREIGN KEY (personId) REFERENCES PERSON (id)
     )
@@ -82,8 +119,9 @@ class DatabaseHelper {
     //returns the memos as a list (array)
 
     final db = await init();
-    final maps = await db
-        .query("PERSON",orderBy:"createDate DESC"); //query all the rows in a table as an array of maps
+    final maps = await db.query("PERSON",
+        orderBy:
+            "createDate DESC"); //query all the rows in a table as an array of maps
 
     return List.generate(maps.length, (i) {
       //create a list of memos
