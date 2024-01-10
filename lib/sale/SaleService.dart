@@ -106,15 +106,32 @@ class SaleService {
   Future<int?> getDebtorTotal() async {
     DatabaseHelper helper = DatabaseHelper();
     final db = await helper.init();
-    String query = """
-    select (sum(total)-sum(discount)-sum(payment)) as balance from SALE where creditor=0
-    """;
+    String query = """ SELECT SUM(tbl2.total) AS total_amount
+                                FROM (
+                                    SELECT
+                                        tbl.creditor_amount,
+                                        tbl.debtor_amount,
+                                        ABS(tbl.debtor_amount - tbl.creditor_amount) AS total
+                                    FROM (
+                                        SELECT
+                                            SUM(CASE WHEN s.creditor = 1 THEN (s.total - s.discount - s.payment) ELSE 0 END) AS creditor_amount,
+                                            SUM(CASE WHEN s.creditor = 0 THEN (s.total - s.discount - s.payment) ELSE 0 END) AS debtor_amount
+                                        FROM
+                                            sale s
+                                        JOIN
+                                            person p ON s.personId = p.id
+                                        GROUP BY
+                                            s.personId
+                                    ) tbl
+                                    WHERE (tbl.debtor_amount - tbl.creditor_amount) > 0
+                                ) tbl2
+                              """;
 
     var res = await db.rawQuery(query);
     int? result = 0;
     List.generate(res.length, (i) {
-      if (res[i]["balance"] != null) {
-        result = res[i]["balance"] as int;
+      if (res[i]["total_amount"] != null) {
+        result = res[i]["total_amount"] as int;
       }
     });
     return result;
@@ -122,15 +139,32 @@ class SaleService {
   Future<int?> getCreditorTotal() async {
     DatabaseHelper helper = DatabaseHelper();
     final db = await helper.init();
-    String query = """
-    select (sum(total)-sum(discount)-sum(payment)) as balance from SALE where creditor=1
-    """;
+    String query = """ SELECT SUM(tbl2.total) AS total_amount
+                                FROM (
+                                    SELECT
+                                        tbl.creditor_amount,
+                                        tbl.debtor_amount,
+                                        ABS(tbl.debtor_amount - tbl.creditor_amount) AS total
+                                    FROM (
+                                        SELECT
+                                            SUM(CASE WHEN s.creditor = 1 THEN (s.total - s.discount - s.payment) ELSE 0 END) AS creditor_amount,
+                                            SUM(CASE WHEN s.creditor = 0 THEN (s.total - s.discount - s.payment) ELSE 0 END) AS debtor_amount
+                                        FROM
+                                            sale s
+                                        JOIN
+                                            person p ON s.personId = p.id
+                                        GROUP BY
+                                            s.personId
+                                    ) tbl
+                                    WHERE (tbl.debtor_amount - tbl.creditor_amount) < 0
+                                ) tbl2
+                              """;
 
     var res = await db.rawQuery(query);
     int? result = 0;
     List.generate(res.length, (i) {
-      if (res[i]["balance"] != null) {
-        result = res[i]["balance"] as int;
+      if (res[i]["total_amount"] != null) {
+        result = res[i]["total_amount"] as int;
       }
     });
     return result;

@@ -27,7 +27,8 @@ class _SettingState extends State<Setting> {
             if(backupResult==1){
               QuickAlert.show(
                 title: "",
-                text: "از پایگاه داده در مدیریت فایل در پوشه acc_back پشتیبان گرفته شد.",
+                text: "از پایگاه داده در مدیریت فایل در پوشه\nacc_back"
+                    "\nپشتیبان گرفته شد",
                 type: QuickAlertType.success,
                 context: context,
               );
