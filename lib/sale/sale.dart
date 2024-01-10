@@ -15,6 +15,7 @@ class Sale {
   int? discount;
   int? payment;
   String? description;
+  bool? creditor;
 
   Sale({
     this.id,
@@ -31,6 +32,7 @@ class Sale {
     this.total,
     this.discount,
     this.payment,
+    this.creditor
   });
 
 
@@ -52,7 +54,8 @@ class Sale {
       "description": description,
       "createDate": createDate,
       "updateDate": updateDate,
-      "payment": payment
+      "payment": payment,
+      "creditor":creditor
     };
   }
 }

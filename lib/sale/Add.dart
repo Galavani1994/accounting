@@ -82,7 +82,7 @@ class _AddState extends State<Add> {
                         f_checkBox(),
                         SizedBox(height: 15),
                         f_product_title(),
-                        //f_creditor_checkBox(),
+                        f_creditor_checkBox(),
                         SizedBox(height: 15),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -472,10 +472,8 @@ class _AddState extends State<Add> {
       int discount = discountController.text.isEmpty
           ? 0
           : int.parse(discountController.text.replaceAll(",", ""));
-      int payment = paymentController.text.isEmpty
-          ? 0
-          : int.parse(paymentController.text.replaceAll(",", ""));
-      int total = (quantity * fee).toInt() - discount - payment;
+
+      int total = (quantity * fee).toInt();
       totalController.text = formatAmount(total.toString());
     }
   }
@@ -519,7 +517,7 @@ class _AddState extends State<Add> {
         dateTimeController.text = value!.formatCompactDate().toString());
   }
 
-  void save(BuildContext context) {
+  Future<void> save(BuildContext context) async {
     Sale sl = Sale(
       id: widget.sale?.id,
       description: descriptionController.text,
@@ -547,21 +545,14 @@ class _AddState extends State<Add> {
       total: totalController.text.isEmpty
           ? "0"
           : totalController.text.replaceAll(",", ""),
+      creditor: isCreditor
     );
     try {
       if (selectedCustomer != null) {
-        saleService.addItem(sl);
+        int? res= await saleService.addItem(sl);
         clearForm();
         showAlert(context);
       } else {
-        /*QuickAlert.show(
-            context: context,
-            title: "!...اخطار",
-            text: "مشتری جهت ثبت انتخاب نشده است",
-            type: QuickAlertType.error,
-            confirmBtnText: 'تایید',
-            borderRadius: 12,
-            width: 60);*/
         Fluttertoast.showToast(
             msg: "مشتری جهت ثبت انتخاب نشده است", timeInSecForIosWeb: 5);
       }

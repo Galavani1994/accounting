@@ -17,7 +17,7 @@ class DatabaseHelper {
     return await openDatabase(
         //open the database or create a database if there isn't any
         path,
-        version: 11,
+        version: 12,
         onCreate: _onCreate);
   }
 
@@ -28,7 +28,7 @@ class DatabaseHelper {
       if (status.isGranted) {
         Directory directory = await getApplicationDocumentsDirectory();
         final path = join(directory.path, "accounting.db");
-        Database database = await openDatabase(path, version: 11, onCreate: _onCreate);
+        Database database = await openDatabase(path, version: 12, onCreate: _onCreate);
 
         String folderName = 'acc_back';
         Directory customFolder = Directory("storage/emulated/0/$folderName");
@@ -91,7 +91,7 @@ class DatabaseHelper {
     total TEXT,
     discount INTEGER,
     payment INTEGER,
-    creditor INTEGER,
+    creditor BOOLEAN,
     FOREIGN KEY (productId) REFERENCES PRODUCT (id),
     FOREIGN KEY (personId) REFERENCES PERSON (id)
     )

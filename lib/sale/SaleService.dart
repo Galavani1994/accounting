@@ -1,6 +1,6 @@
 import 'package:accounting/sale/sale.dart';
 import 'package:accounting/util/DatabaseHelper.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class SaleService {
   Future<int?> addItem(Sale item) async {
@@ -13,12 +13,9 @@ class SaleService {
       try {
         DatabaseHelper helper = DatabaseHelper();
         final db = await helper.init(); //open database
-        res = db.insert(
-          "SALE",
-          item.toMap(),
-        );
+        res = db.insert("SALE", item.toMap(),);
       } catch (e) {
-        print(e.toString());
+        Fluttertoast.showToast(msg: "Backup failed: $e");
         throw Exception();
       }
       return res;
@@ -26,7 +23,6 @@ class SaleService {
   }
 
   Future<List<Sale>> fetchSales(int? personId) async {
-    //returns the memos as a list (array)
     DatabaseHelper helper = DatabaseHelper();
     final db = await helper.init();
     final maps;
@@ -43,7 +39,7 @@ class SaleService {
       }
     } else {
       try {
-        maps = await db.query("Sale", orderBy: "createDate DESC");
+        maps = await db.query("Sale", orderBy: "createDate DESC,id DESC");
         list = generateList(maps);
       } catch (ex) {
         print(ex.toString());
@@ -71,26 +67,38 @@ class SaleService {
           total: (maps[i]['total'] as Object).toString(),
           discount: maps[i]['discount'] as int,
           payment: maps[i]['payment'] as int,
+          creditor: (maps[i]['creditor'] == 1),
         );
       });
 
-  Future<String?> getTotalByPersonId(int? personId) async {
+  Future<int?> getDebtorTotalByPersonId(int? personId) async {
     DatabaseHelper helper = DatabaseHelper();
     final db = await helper.init();
     String query = """
-    select  (t1.total-t1.payment) balance from (
-             select 
-                (select sum(payment) from sale where personId=?) as payment,
-                (select sum(total) from sale where personId=? and total>0)as total
-                                                 ) t1
+    select (sum(total)-sum(discount)-sum(payment)) as balance from SALE where personId=? and creditor=0
     """;
 
-    var res =
-        await db.rawQuery(query, [personId.toString(), personId.toString()]);
-    String? result = "0";
+    var res = await db.rawQuery(query, [personId.toString()]);
+    int? result = 0;
     List.generate(res.length, (i) {
       if (res[i]["balance"] != null) {
-        result = (res[i]["balance"] as int).toString();
+        result = res[i]["balance"] as int;
+      }
+    });
+    return result;
+  }
+  Future<int?> getCreditorTotalByPersonId(int? personId) async {
+    DatabaseHelper helper = DatabaseHelper();
+    final db = await helper.init();
+    String query = """
+    select (sum(total)-sum(discount)-sum(payment)) as balance from SALE where personId=? and creditor=1
+    """;
+
+    var res = await db.rawQuery(query, [personId.toString()]);
+    int? result = 0;
+    List.generate(res.length, (i) {
+      if (res[i]["balance"] != null) {
+        result = res[i]["balance"] as int;
       }
     });
     return result;

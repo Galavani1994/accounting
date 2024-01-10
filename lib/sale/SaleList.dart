@@ -19,24 +19,39 @@ class SaleList extends StatefulWidget {
 }
 
 class _SaleListState extends State<SaleList> {
-  var totalByCustomerId = "";
-  var paymentByCustomerId = "";
+  var totalCreditorByCustomerId = "";
+  var totalDebtorByCustomerId = "";
+  int total = 0;
+  late int creditor = 0;
+  late int debtor = 0;
   var formatter = NumberFormat('#,###,000');
 
   @override
   Widget build(BuildContext context) {
     SaleService saleService = SaleService();
+    saleService.getDebtorTotalByPersonId(widget.customer.id).then((value) => {
+          setState(() {
+            debtor = value!;
+          })
+        });
+    saleService.getCreditorTotalByPersonId(widget.customer.id).then((value) => {
+          setState(() {
+            creditor = value!;
+          })
+        });
 
-    saleService.getTotalByPersonId(widget.customer.id).then((value) => {
-          setState(() {
-            totalByCustomerId = formatter.format(int.parse(value!));
-          })
-        });
-    saleService.getPaymentByPersonId(widget.customer.id).then((value) => {
-          setState(() {
-            paymentByCustomerId = formatter.format(int.parse(value!));
-          })
-        });
+    total = (debtor == null ? 0 : debtor) - (creditor == null ? 0 : creditor);
+    if (creditor != null) {
+      totalCreditorByCustomerId = formatter.format(creditor);
+    } else {
+      totalCreditorByCustomerId = "0";
+    }
+    if (debtor != null) {
+      totalDebtorByCustomerId = formatter.format(debtor);
+    } else {
+      totalDebtorByCustomerId = "0";
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text('صورتحساب' +
@@ -138,17 +153,31 @@ class _SaleListState extends State<SaleList> {
                                             CrossAxisAlignment.end,
                                         children: [
                                           Text(
-                                            sale.createDate.toString(),
+                                            (sale.creditor != null &&
+                                                        sale.creditor == true
+                                                    ? 'بس'
+                                                    : 'بد') +
+                                                ' - ' +
+                                                sale.createDate.toString(),
                                             style: TextStyle(
                                                 fontFamily: "Vazir",
                                                 fontSize: 14),
                                           ),
                                           Text(
-                                            " تعداد : " + (sale.quantity == null ? "0" : sale.quantity).toString() + " قیمت : " + (sale.price == null
-                                                ? "0"
-                                                : formatter.format(
-                                                sale.price))
-                                                .toString(), style: TextStyle(fontFamily: "Vazir", fontSize: 12),
+                                            " تعداد : " +
+                                                (sale.quantity == null
+                                                        ? "0"
+                                                        : sale.quantity)
+                                                    .toString() +
+                                                " قیمت : " +
+                                                (sale.price == null
+                                                        ? "0"
+                                                        : formatter
+                                                            .format(sale.price))
+                                                    .toString(),
+                                            style: TextStyle(
+                                                fontFamily: "Vazir",
+                                                fontSize: 12),
                                           ),
                                           Text(
                                             " تخفیف : " +
@@ -194,22 +223,42 @@ class _SaleListState extends State<SaleList> {
         ),
       ),
       bottomSheet: Container(
-        height: 60,
+        height: 70,
         width: MediaQuery.of(context).size.width,
         child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: Column(
               children: [
-                Text(
-                  " مانده کل  : " + totalByCustomerId,
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  " پرداختی : " + paymentByCustomerId,
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "  مانده بستانکار : " + totalCreditorByCustomerId,
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          " مانده بدهی : " + totalDebtorByCustomerId,
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                    Text(
+                      "  مانده کل : " +
+                          '  ' +
+                          formatter.format(total.abs()) +
+                          ' ' +
+                          (total > 0 ? ' بدهکار ' : 'بستانکار'),
+                      style:
+                          TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                )
               ],
             )),
         decoration: BoxDecoration(
