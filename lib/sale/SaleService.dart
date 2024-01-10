@@ -103,6 +103,38 @@ class SaleService {
     });
     return result;
   }
+  Future<int?> getDebtorTotal() async {
+    DatabaseHelper helper = DatabaseHelper();
+    final db = await helper.init();
+    String query = """
+    select (sum(total)-sum(discount)-sum(payment)) as balance from SALE where creditor=0
+    """;
+
+    var res = await db.rawQuery(query);
+    int? result = 0;
+    List.generate(res.length, (i) {
+      if (res[i]["balance"] != null) {
+        result = res[i]["balance"] as int;
+      }
+    });
+    return result;
+  }
+  Future<int?> getCreditorTotal() async {
+    DatabaseHelper helper = DatabaseHelper();
+    final db = await helper.init();
+    String query = """
+    select (sum(total)-sum(discount)-sum(payment)) as balance from SALE where creditor=1
+    """;
+
+    var res = await db.rawQuery(query);
+    int? result = 0;
+    List.generate(res.length, (i) {
+      if (res[i]["balance"] != null) {
+        result = res[i]["balance"] as int;
+      }
+    });
+    return result;
+  }
 
   Future<String?> getCustomerFullNameById(int? personId) async {
     DatabaseHelper helper = DatabaseHelper();

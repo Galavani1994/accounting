@@ -23,11 +23,18 @@ class _SettingState extends State<Setting> {
         child: ElevatedButton.icon(
           onPressed: () async {
             DatabaseHelper dbHelper = DatabaseHelper();
-            bool backupResult = await dbHelper.backupDatabase();
-            if(backupResult){
+            int backupResult = await dbHelper.backupDatabase();
+            if(backupResult==1){
               QuickAlert.show(
                 title: "",
-                text: "از داده های ذخیره شده در مدیریت فایل پشتیبان گرفته شد",
+                text: "از پایگاه داده در مدیریت فایل در پوشه acc_back پشتیبان گرفته شد.",
+                type: QuickAlertType.success,
+                context: context,
+              );
+            }else if(backupResult==13){
+              QuickAlert.show(
+                title: "",
+                text: "در تتنظمات > مدیریت برنامه > بخش دسترسی ، دسترسی های لازم را جهت گرفتن پشتیبان بدهید",
                 type: QuickAlertType.info,
                 context: context,
               );

@@ -21,14 +21,15 @@ class DatabaseHelper {
         onCreate: _onCreate);
   }
 
-  Future<bool> backupDatabase() async {
+  Future<int> backupDatabase() async {
     try {
       PermissionStatus status = await Permission.storage.request();
 
       if (status.isGranted) {
         Directory directory = await getApplicationDocumentsDirectory();
         final path = join(directory.path, "accounting.db");
-        Database database = await openDatabase(path, version: 12, onCreate: _onCreate);
+        Database database =
+            await openDatabase(path, version: 12, onCreate: _onCreate);
 
         String folderName = 'acc_back';
         Directory customFolder = Directory("storage/emulated/0/$folderName");
@@ -42,16 +43,24 @@ class DatabaseHelper {
         await database.close();
 
         print("Backup successful. Path: $backupPath");
-        return true;
+        return 1;
       } else {
         // Display a toast message for permission not granted
-        Fluttertoast.showToast(msg: "Storage permission not granted.",timeInSecForIosWeb: 5);
-        return false;
+        Fluttertoast.showToast(
+            msg: "Storage permission not granted.", timeInSecForIosWeb: 5);
+        return 0;
       }
     } catch (e) {
-      Fluttertoast.showToast(msg: "Backup failed: $e");
-      print("Backup failed: $e");
-      return false;
+      if (e is FileSystemException && e.osError?.errorCode == 13) {
+        // Handle access denied exception
+        Fluttertoast.showToast(msg: "Access Denied: Insufficient permissions.");
+        return 13;
+      } else {
+        // Handle other exceptions
+        Fluttertoast.showToast(msg: "Backup failed: $e");
+        print("Backup failed: $e");
+      }
+      return 0;
     }
   }
 
