@@ -67,8 +67,8 @@ class  ProductService{
         id: maps[i]['id'] as int,
         fullName: maps[i]['fullName'] as String,
         description: maps[i]['description'] as String,
-        createDate: maps[i]['createDate'] as String,
-        updateDate: maps[i]['updateDate'] as String,
+        createDate: maps[i]['create_date'] as String,
+        updateDate: maps[i]['update_date'] as String,
       );
     });
   }

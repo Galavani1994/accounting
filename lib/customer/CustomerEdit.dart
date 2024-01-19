@@ -24,7 +24,7 @@ class CustomerEdit extends StatelessWidget {
     TextEditingController fullNameController = TextEditingController(
         text: customer?.first_name == null ? "" : "${customer?.first_name}"+" "+"${customer?.last_name}");
     TextEditingController phoneController = TextEditingController(
-        text: customer?.phoneNumber == null ? "" : "${customer?.phoneNumber}");
+        text: customer?.phone_number == null ? "" : "${customer?.phone_number}");
     TextEditingController descriptionController = TextEditingController(
         text: customer?.description == null ? "" : "${customer?.description}");
     return WillPopScope(
@@ -100,7 +100,7 @@ class CustomerEdit extends StatelessWidget {
                             id: customer?.id,
                             first_name: fullNameController.text,
                             last_name: '',
-                            phoneNumber: phoneController.text,
+                            phone_number: phoneController.text,
                             address: '',
                             description: descriptionController.text,
                             createDate: DateTime.now().toString(),

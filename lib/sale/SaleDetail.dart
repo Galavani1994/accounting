@@ -28,17 +28,19 @@ class _SaleDetailState extends State<SaleDetail> {
   Widget build(BuildContext context) {
     SaleService saleService = SaleService();
     saleService
-        .getCustomerFullNameById(widget.entity.customerId)
+        .getCustomerFullNameById(widget.entity.customer_id)
         .then((value) => {
               setState(() {
                 customerFullName = value!;
               })
             });
-    saleService.getProductNameById(widget.entity.productId).then((value) => {
-          setState(() {
-            productFullName = value!;
-          })
-        });
+    if (widget.entity.product_id != null && widget.entity.product_id != 0) {
+      saleService.getProductNameById(widget.entity.product_id).then((value) => {
+            setState(() {
+              productFullName = value!;
+            })
+          });
+    }
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -50,9 +52,9 @@ class _SaleDetailState extends State<SaleDetail> {
                 SizedBox(height: 15),
                 f_date(widget.entity!.createDate),
                 SizedBox(height: 15),
-                f_customer(widget.entity.customerId),
+                f_customer(widget.entity.customer_id),
                 SizedBox(height: 15),
-                f_product(widget.entity.productTitle),
+                f_product(widget.entity.product_title),
                 SizedBox(height: 15),
                 f_quantity(widget.entity.quantity),
                 SizedBox(height: 15),

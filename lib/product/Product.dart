@@ -12,8 +12,8 @@ class Product {
       "id": id,
       "fullName": fullName,
       "description": description,
-      "createDate": createDate,
-      "updateDate": updateDate
+      "create_date": createDate,
+      "update_date": updateDate
     };
   }
 }

@@ -4,10 +4,10 @@ class Sale {
   int? id;
   String? createDate;
   String? updateDate;
-  int? productId;
-  String? productTitle;
+  int? product_id;
+  String? product_title;
   String? productName;
-  int? customerId;
+  int? customer_id;
   String? customerName;
   int? price;
   double? quantity;
@@ -22,10 +22,10 @@ class Sale {
     this.createDate,
     this.updateDate,
     this.description,
-    this.productId,
-    this.productTitle,
+    this.product_id,
+    this.product_title,
     this.productName,
-    this.customerId,
+    this.customer_id,
     this.customerName,
     this.price,
     this.quantity,
@@ -38,22 +38,22 @@ class Sale {
 
   @override
   String toString() {
-    return 'Sale{id: $id, createDate: $createDate, updateDate: $updateDate, productId: $productId, productName: $productName, customerId: $customerId, customerName: $customerName, price: $price, quantity: $quantity, total: $total, discount: $discount, payment: $payment, description: $description}';
+    return 'Sale{id: $id, createDate: $createDate, updateDate: $updateDate, productId: $product_id, productName: $productName, customerId: $customer_id, customerName: $customerName, price: $price, quantity: $quantity, total: $total, discount: $discount, payment: $payment, description: $description}';
   }
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       "id": id,
-      "productId": productId,
-      "productTitle": productTitle,
-      "personId": customerId,
+      "product_id": product_id,
+      "product_title": product_title,
+      "person_id": customer_id,
       "price": price,
       "quantity": quantity,
       "total": total,
       "discount": discount,
       "description": description,
-      "createDate": createDate,
-      "updateDate": updateDate,
+      "create_date": createDate,
+      "update_date": updateDate,
       "payment": payment,
       "creditor":creditor
     };

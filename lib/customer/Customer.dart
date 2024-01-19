@@ -4,7 +4,7 @@ class Customer {
   String updateDate;
   String first_name;
   String last_name;
-  String phoneNumber;
+  String phone_number;
   String address;
   String description;
 
@@ -12,7 +12,7 @@ class Customer {
       {this.id,
       required this.first_name,
       required this.last_name,
-      required this.phoneNumber,
+      required this.phone_number,
       required this.address,
       required this.description,
       required this.createDate,
@@ -23,11 +23,11 @@ class Customer {
       "id": id,
       "first_name": first_name,
       "last_name": last_name,
-      "phoneNumber": phoneNumber,
+      "phone_number": phone_number,
       "address": address,
       "description": description,
-      "createDate": createDate,
-      "updateDate": updateDate
+      "create_date": createDate,
+      "update_date": updateDate
     };
   }
 }

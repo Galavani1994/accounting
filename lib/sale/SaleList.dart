@@ -149,20 +149,10 @@ class _SaleListState extends State<SaleList> {
                                     ),
                                     Container(
                                       child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.end,
+                                        crossAxisAlignment: CrossAxisAlignment.end,
                                         children: [
-                                          Text(
-                                            (sale.creditor != null &&
-                                                        sale.creditor == true
-                                                    ? 'بس'
-                                                    : 'بد') +
-                                                ' - ' +
-                                                sale.createDate.toString(),
-                                            style: TextStyle(
-                                                fontFamily: "Vazir",
-                                                fontSize: 14),
-                                          ),
+                                          Text(sale.createDate.toString()+' - '+(sale.creditor != null && sale.creditor == true ? 'بس' : 'بد') ,
+                                            style: TextStyle(fontFamily: "Vazir", fontSize: 14)),
                                           Text(
                                             " تعداد : " +
                                                 (sale.quantity == null

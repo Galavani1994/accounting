@@ -523,11 +523,11 @@ class _AddState extends State<Add> {
       description: descriptionController.text,
       createDate: dateTimeController.text,
       updateDate: DateTime.now().toString(),
-      productId: selectedProduct == null
+      product_id: selectedProduct == null
           ? null
           : int.parse(selectedProduct.split('-')[0]),
-      productTitle: productTitleController.text,
-      customerId: selectedCustomer == null
+      product_title: productTitleController.text,
+      customer_id: selectedCustomer == null
           ? null
           : int.parse(selectedCustomer.split('-')[0]),
       quantity: quantityController.text.isEmpty

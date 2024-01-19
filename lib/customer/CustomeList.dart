@@ -130,7 +130,7 @@ class _CustomerListState extends State<CustomerList> {
                 ),
               ),
               subtitle: Text(
-                customer.phoneNumber,
+                customer.phone_number,
                 style: TextStyle(
                   fontSize: 14,
                   color: Colors.grey,

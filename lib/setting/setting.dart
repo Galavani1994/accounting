@@ -48,6 +48,34 @@ class _SettingState extends State<Setting> {
           ),
         ),
       ),
+      bottomSheet: Container(
+        alignment: Alignment.bottomLeft,transformAlignment: Alignment.bottomLeft,
+        height: 50,
+        width: MediaQuery.of(context).size.width,
+        child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("developed by : Mahdi Galavani",
+                      style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold),),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Text("call : +98 914 543 5507",
+                      style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold),)
+                  ],
+                )
+              ],
+            )),
+        decoration: BoxDecoration(
+          color: Colors.blueGrey,
+          borderRadius: BorderRadius.circular(2),
+        ),
+      ),
     );
   }
 }

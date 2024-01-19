@@ -70,11 +70,11 @@ class DatabaseHelper {
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     first_name TEXT,
     last_name TEXT,
-    phoneNumber TEXT,
+    phone_number TEXT,
     address TEXT,
     description TEXT,
-    createDate TEXT,
-    updateDate TEXT
+    create_date TEXT,
+    update_date TEXT
     )
     ''');
     await db.execute("""
@@ -82,27 +82,27 @@ class DatabaseHelper {
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     fullName TEXT,
     description TEXT,
-    createDate TEXT,
-    updateDate TEXT
+    create_date TEXT,
+    update_date TEXT
     )
     """);
     await db.execute("""
     CREATE TABLE SALE(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     description TEXT,
-    createDate TEXT,
-    updateDate TEXT,
-    productId INTEGER,
-    productTitle TEXT,
-    personId INTEGER,
+    create_date TEXT,
+    update_date TEXT,
+    product_id INTEGER,
+    product_title TEXT,
+    person_id INTEGER,
     price INTEGER,
     quantity REAL,
     total TEXT,
     discount INTEGER,
     payment INTEGER,
     creditor BOOLEAN,
-    FOREIGN KEY (productId) REFERENCES PRODUCT (id),
-    FOREIGN KEY (personId) REFERENCES PERSON (id)
+    FOREIGN KEY (product_id) REFERENCES PRODUCT (id),
+    FOREIGN KEY (person_id) REFERENCES PERSON (id)
     )
     """);
   }
@@ -130,19 +130,19 @@ class DatabaseHelper {
     final db = await init();
     final maps = await db.query("PERSON",
         orderBy:
-            "createDate DESC"); //query all the rows in a table as an array of maps
+        "id DESC"); //query all the rows in a table as an array of maps
 
     return List.generate(maps.length, (i) {
       //create a list of memos
       return Customer(
-        id: maps[i]['id'] as int,
-        first_name: maps[i]['first_name'] as String,
-        last_name: maps[i]['last_name'] as String,
-        phoneNumber: maps[i]['phoneNumber'] as String,
-        address: maps[i]['address'] as String,
-        description: maps[i]['description'] as String,
-        createDate: maps[i]['createDate'] as String,
-        updateDate: maps[i]['updateDate'] as String,
+        id: maps[i]['id'] as int?,
+        first_name: maps[i]['first_name'] as String? ?? '',
+        last_name: maps[i]['last_name'] as String? ?? '',
+        phone_number: maps[i]['phone_number'] as String? ?? '',
+        address: maps[i]['address'] as String? ?? '',
+        description: maps[i]['description'] as String? ?? '',
+        createDate: maps[i]['create_date'] as String? ?? '',
+        updateDate: maps[i]['update_date'] as String? ?? '',
       );
     });
   }

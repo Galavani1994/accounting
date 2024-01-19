@@ -291,8 +291,8 @@ class _SaleEditState extends State<SaleEdit> {
           ? DateTime.now().toString()
           : dateTimeController.text,
       updateDate: DateTime.now().toString(),
-      productId: selectedProduct,
-      customerId: selectedCustomer,
+      product_id: selectedProduct,
+      customer_id: selectedCustomer,
       quantity: quantityController.text.isEmpty
           ? 0
           : double.parse(quantityController.text),

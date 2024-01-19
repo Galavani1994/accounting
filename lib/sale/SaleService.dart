@@ -30,16 +30,16 @@ class SaleService {
     if (personId != null && personId > 0) {
       try {
         maps = await db.query("Sale",
-            where: "personId=?",
+            where: "person_id=?",
             whereArgs: [personId],
-            orderBy: "createDate  DESC,id DESC");
+            orderBy: "id DESC");
         list = generateList(maps);
       } catch (ex) {
         print(ex.toString());
       }
     } else {
       try {
-        maps = await db.query("Sale", orderBy: "createDate DESC,id DESC");
+        maps = await db.query("Sale", orderBy: "create_date DESC,id DESC");
         list = generateList(maps);
       } catch (ex) {
         print(ex.toString());
@@ -52,16 +52,12 @@ class SaleService {
         //create a list of memos
         return Sale(
           id: maps[i]['id'] as int,
-          description: maps[i]['description'] as String,
-          createDate: maps[i]['createDate'] as String,
-          updateDate: maps[i]['updateDate'] as String,
-          productId:
-              (maps[i]['productId'] == null ? 0 : maps[i]['productId']) as int,
-          productTitle: (maps[i]['productTitle'] == null
-              ? ''
-              : maps[i]['productTitle']) as String,
-          customerId:
-              (maps[i]['personId'] == null ? 0 : maps[i]['personId']) as int,
+          description: maps[i]['description'] as String? ?? '',
+          createDate: maps[i]['create_date'] as String? ?? '',
+          updateDate: maps[i]['update_date'] as String? ?? '',
+          product_id: (maps[i]['product_id'] == null ? 0 : maps[i]['product_id']) as int,
+          product_title: maps[i]['product_title'] as String? ?? '',
+          customer_id: (maps[i]['person_id'] == null ? 0 : maps[i]['person_id']) as int,
           price: maps[i]['price'] as int,
           quantity: maps[i]['quantity'] as double,
           total: (maps[i]['total'] as Object).toString(),
@@ -75,7 +71,7 @@ class SaleService {
     DatabaseHelper helper = DatabaseHelper();
     final db = await helper.init();
     String query = """
-    select (sum(total)-sum(discount)-sum(payment)) as balance from SALE where personId=? and creditor=0
+    select (sum(total)-sum(discount)-sum(payment)) as balance from SALE where person_id=? and creditor=0
     """;
 
     var res = await db.rawQuery(query, [personId.toString()]);
@@ -91,7 +87,7 @@ class SaleService {
     DatabaseHelper helper = DatabaseHelper();
     final db = await helper.init();
     String query = """
-    select (sum(total)-sum(discount)-sum(payment)) as balance from SALE where personId=? and creditor=1
+    select (sum(total)-sum(discount)-sum(payment)) as balance from SALE where person_id=? and creditor=1
     """;
 
     var res = await db.rawQuery(query, [personId.toString()]);
@@ -119,9 +115,9 @@ class SaleService {
                                         FROM
                                             sale s
                                         JOIN
-                                            person p ON s.personId = p.id
+                                            person p ON s.person_id = p.id
                                         GROUP BY
-                                            s.personId
+                                            s.person_id
                                     ) tbl
                                     WHERE (tbl.debtor_amount - tbl.creditor_amount) > 0
                                 ) tbl2
@@ -152,9 +148,9 @@ class SaleService {
                                         FROM
                                             sale s
                                         JOIN
-                                            person p ON s.personId = p.id
+                                            person p ON s.person_id = p.id
                                         GROUP BY
-                                            s.personId
+                                            s.person_id
                                     ) tbl
                                     WHERE (tbl.debtor_amount - tbl.creditor_amount) < 0
                                 ) tbl2
@@ -209,7 +205,7 @@ class SaleService {
   Future<String?> getPaymentByPersonId(int? personId) async {
     DatabaseHelper helper = DatabaseHelper();
     final db = await helper.init();
-    String query = "select sum(payment) as payment from sale where personId=?";
+    String query = "select sum(payment) as payment from sale where person_id=?";
 
     var res = await db.rawQuery(query, [personId.toString()]);
     String? result = "0";
