@@ -64,6 +64,51 @@ class DatabaseHelper {
     }
   }
 
+  Future<int> importDatabase(String filePath) async {
+    try {
+      PermissionStatus status = await Permission.storage.request();
+
+      if (status.isGranted) {
+        // Check if the backup file exists
+        if (!await File(filePath).exists()) {
+          Fluttertoast.showToast(msg: "Backup file not found.");
+          return 0;
+        }
+
+        Directory directory = await getApplicationDocumentsDirectory();
+        final path = join(directory.path, "accounting.db");
+
+        // Copy the backup file to the application's data directory
+        await File(filePath).copy(path);
+
+        // Open the database with the imported data
+        Database database = await openDatabase(path, version: 12, onCreate: _onCreate);
+
+        // Close the database to release resources
+        await database.close();
+
+        print("Import successful. Path: $path");
+        return 1;
+      } else {
+        // Display a toast message for permission not granted
+        Fluttertoast.showToast(
+            msg: "Storage permission not granted.", timeInSecForIosWeb: 5);
+        return 0;
+      }
+    } catch (e) {
+      if (e is FileSystemException && e.osError?.errorCode == 13) {
+        // Handle access denied exception
+        Fluttertoast.showToast(msg: "Access Denied: Insufficient permissions.");
+        return 13;
+      } else {
+        // Handle other exceptions
+        Fluttertoast.showToast(msg: "Import failed: $e");
+        print("Import failed: $e");
+      }
+      return 0;
+    }
+  }
+
   Future _onCreate(Database db, int version) async {
     await db.execute('''
     CREATE TABLE PERSON(
@@ -80,7 +125,7 @@ class DatabaseHelper {
     await db.execute("""
     CREATE TABLE PRODUCT(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    fullName TEXT,
+    title TEXT,
     description TEXT,
     create_date TEXT,
     update_date TEXT

@@ -1,46 +1,15 @@
-import 'dart:io';
-
 import 'package:accounting/product/Product.dart';
-import 'package:accounting/util/AppConstant.dart';
 import 'package:accounting/util/DatabaseHelper.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
-import '../util/db.dart';
-
 class  ProductService{
-  Future<Database> init() async {
-    Directory directory =
-    await getApplicationDocumentsDirectory(); //returns a directory which stores permanent files
-    final path =
-    join(directory.path, AppConstant.DB_NAME); //create path to database
-
-    return await openDatabase(
-      //open the database or create a database if there isn't any
-        path,
-        version: 2,
-        onCreate: _onCreate);
-  }
-
-  Future _onCreate(Database db, int version) async {
-    await db.execute('''
-    CREATE TABLE PRODUCT(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    fullName TEXT,
-    description TEXT,
-    createDate TEXT,
-    updateDate TEXT
-    )
-    ''');
-  }
 
 
   Future<Future<int>> addItem(Product item) async {
     String itemId = item.id.toString();
     int id = itemId == "null" ? 0 : int.parse(itemId);
     if (id > 0) {
-      return updateCustomer(id, item);
+      return updateProduct(id, item);
     } else {
       //returns number of items inserted as an integer
       DatabaseHelper helper= DatabaseHelper();
@@ -65,7 +34,7 @@ class  ProductService{
       //create a list of memos
       return Product(
         id: maps[i]['id'] as int,
-        fullName: maps[i]['fullName'] as String,
+        fullName: maps[i]['title'] as String,
         description: maps[i]['description'] as String,
         createDate: maps[i]['create_date'] as String,
         updateDate: maps[i]['update_date'] as String,
@@ -73,7 +42,7 @@ class  ProductService{
     });
   }
 
-  Future<int> deleteCustomer(String id) async {
+  Future<int> deleteProduct(String id) async {
     //returns number of items deleted
     DatabaseHelper helper= DatabaseHelper();
     final db = await helper.init();
@@ -86,7 +55,7 @@ class  ProductService{
     return result;
   }
 
-  Future<int> updateCustomer(int id, Product item) async {
+  Future<int> updateProduct(int id, Product item) async {
     // returns the number of rows updated
     DatabaseHelper helper= DatabaseHelper();
     final db = await helper.init();

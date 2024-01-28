@@ -197,7 +197,7 @@ class _ProductListState extends State<ProductList> {
       text: "آیا از پاک کردن اطلاعات مطمئن هستید؟",
       onConfirmBtnTap: () async {
         try {
-          await productService.deleteCustomer(product.id.toString());
+          await productService.deleteProduct(product.id.toString());
           refreshList();
         } catch (e) {
           print('Error deleting customer: $e');
