@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:accounting/customer/Customer.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -35,7 +36,9 @@ class DatabaseHelper {
         Directory customFolder = Directory("storage/emulated/0/$folderName");
         await customFolder.create(recursive: true);
 
-        String backupPath = join(customFolder.path, 'backup_accounting.db');
+        DateTime now = DateTime.now();
+        String formattedDate = DateFormat('yy-MM-dd_HH-mm').format(now);
+        String backupPath = join(customFolder.path, '${formattedDate}_backup.db');
 
         await File(database.path).copy(backupPath);
 
@@ -78,10 +81,12 @@ class DatabaseHelper {
         Directory directory = await getApplicationDocumentsDirectory();
         final path = join(directory.path, "accounting.db");
 
+        await deleteDatabase(path);
+
         // Copy the backup file to the application's data directory
         await File(filePath).copy(path);
 
-        // Open the database with the imported data
+        // حذف دیتابیس فعلی
         Database database = await openDatabase(path, version: 12, onCreate: _onCreate);
 
         // Close the database to release resources

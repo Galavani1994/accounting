@@ -177,7 +177,7 @@ class _CustomerListState extends State<CustomerList> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => SaleList(customer),
+                      builder: (context) => SaleList(customer.id!),
                     ),
                   );
                 },

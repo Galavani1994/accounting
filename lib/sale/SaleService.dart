@@ -1,4 +1,5 @@
 import 'package:accounting/sale/sale.dart';
+import 'package:accounting/sale/saleByType.dart';
 import 'package:accounting/util/DatabaseHelper.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -13,7 +14,10 @@ class SaleService {
       try {
         DatabaseHelper helper = DatabaseHelper();
         final db = await helper.init(); //open database
-        res = db.insert("SALE", item.toMap(),);
+        res = db.insert(
+          "SALE",
+          item.toMap(),
+        );
       } catch (e) {
         Fluttertoast.showToast(msg: "Backup failed: $e");
         throw Exception();
@@ -30,9 +34,7 @@ class SaleService {
     if (personId != null && personId > 0) {
       try {
         maps = await db.query("Sale",
-            where: "person_id=?",
-            whereArgs: [personId],
-            orderBy: "id DESC");
+            where: "person_id=?", whereArgs: [personId], orderBy: "id DESC");
         list = generateList(maps);
       } catch (ex) {
         print(ex.toString());
@@ -55,9 +57,12 @@ class SaleService {
           description: maps[i]['description'] as String? ?? '',
           createDate: maps[i]['create_date'] as String? ?? '',
           updateDate: maps[i]['update_date'] as String? ?? '',
-          product_id: (maps[i]['product_id'] == null ? 0 : maps[i]['product_id']) as int,
+          product_id: (maps[i]['product_id'] == null
+              ? 0
+              : maps[i]['product_id']) as int,
           product_title: maps[i]['product_title'] as String? ?? '',
-          customer_id: (maps[i]['person_id'] == null ? 0 : maps[i]['person_id']) as int,
+          customer_id:
+              (maps[i]['person_id'] == null ? 0 : maps[i]['person_id']) as int,
           price: maps[i]['price'] as int,
           quantity: maps[i]['quantity'] as double,
           total: (maps[i]['total'] as Object).toString(),
@@ -83,6 +88,7 @@ class SaleService {
     });
     return result;
   }
+
   Future<int?> getCreditorTotalByPersonId(int? personId) async {
     DatabaseHelper helper = DatabaseHelper();
     final db = await helper.init();
@@ -99,6 +105,58 @@ class SaleService {
     });
     return result;
   }
+
+  Future<List<SaleByType>> fetchCreditorOrDebtor(String type) async {
+    DatabaseHelper helper = DatabaseHelper();
+    final db = await helper.init();
+    String query = """
+                            SELECT
+                            tbl.person_id as person_id,
+                            tbl.fullName as fullName,
+                            tbl.creditor_amount as creditor_amount,
+                            tbl.debtor_amount as debtor_amount,
+                            ABS(tbl.debtor_amount - tbl.creditor_amount) AS total
+                        FROM (
+                            SELECT
+                                p.first_name || ' ' || p.last_name AS fullName,
+                                p.id AS person_id,
+                                SUM(CASE WHEN s.creditor = 1 THEN (s.total - s.discount - s.payment) ELSE 0 END) AS creditor_amount,
+                                SUM(CASE WHEN s.creditor = 0 THEN (s.total - s.discount - s.payment) ELSE 0 END) AS debtor_amount
+                            FROM
+                                sale s
+                            JOIN
+                                person p ON s.person_id = p.id
+                            GROUP BY
+                                s.person_id
+                        ) tbl
+                        WHERE
+                            """;
+    if (type == "DEBTOR") {
+      query = query + " (debtor_amount - creditor_amount) > 0 ";
+    } else {
+      query = query + " (debtor_amount - creditor_amount) < 0 ";
+    }
+
+    query = query + " order by person_id desc";
+    final maps;
+    List<SaleByType> list = [SaleByType()];
+    maps = await db.rawQuery(query);
+    list = generateCreditorOrDebtorList(maps);
+
+    return list;
+  }
+
+  List<SaleByType> generateCreditorOrDebtorList(maps) =>
+      List.generate(maps.length, (i) {
+        //create a list of memos
+        return SaleByType(
+            person_id: maps[i]['person_id'] as int,
+            fullName: maps[i]['fullName'] as String? ?? '',
+            creditor_amount: (maps[i]['creditor_amount'] as Object).toString(),
+            debtor_amount: (maps[i]['debtor_amount'] as Object).toString(),
+            total: (maps[i]['total'] as Object).toString());
+      });
+
   Future<int?> getDebtorTotal() async {
     DatabaseHelper helper = DatabaseHelper();
     final db = await helper.init();
@@ -132,6 +190,7 @@ class SaleService {
     });
     return result;
   }
+
   Future<int?> getCreditorTotal() async {
     DatabaseHelper helper = DatabaseHelper();
     final db = await helper.init();

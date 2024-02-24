@@ -87,24 +87,6 @@ class _SettingState extends State<Setting> {
             ElevatedButton.icon(
               onPressed: () async {
                 await pickBackupFile();
-
-                /*DatabaseHelper dbHelper = DatabaseHelper();
-                int importResult = await dbHelper.importDatabase();
-                if (importResult == 1) {
-                  QuickAlert.show(
-                    title: "",
-                    text: "پایگاه داده با موفقیت وارد شد.",
-                    type: QuickAlertType.success,
-                    context: context,
-                  );
-                } else if (importResult == 13) {
-                  QuickAlert.show(
-                    title: "",
-                    text: "در تنظیمات > مدیریت برنامه > بخش دسترسی ، دسترسی های لازم را جهت وارد کردن پشتیبان بدهید",
-                    type: QuickAlertType.info,
-                    context: context,
-                  );
-                }*/
               },
               icon: Icon(Icons.import_export),
               label: Text(

@@ -3,10 +3,14 @@ import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../sale/SaleService.dart';
+import 'Retailers.dart';
 
 class Report extends StatelessWidget {
   final SaleService saleService = SaleService();
   final formatter = NumberFormat('#,###,000');
+
+  bool hasAccess = false;
+  var storedIndex=0;
 
   @override
   Widget build(BuildContext context) {
@@ -44,16 +48,21 @@ class Report extends StatelessWidget {
                       selectionBehavior: SelectionBehavior(enable: true),
                       // Set different colors for debtor and creditor slices
                       pointColorMapper: (data, _) =>
-                          data.category.contains('بدهکار')
-                              ? Colors.deepPurple
-                              : Colors.lime[900],
+                      data.category.contains('بدهکار')
+                          ? Colors.deepPurple
+                          : Colors.lime[900],
                     ),
                   ],
-                  onSelectionChanged: (selectionArgs) {
-                    // Handle debtor selection, you can navigate to another screen or perform any action
-                    // For now, just printing a message
-                    print('Debtor selected, show debtor customers ${selectionArgs.pointIndex}');
-                  },
+                  onSelectionChanged: (SelectionArgs args) {
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Retailers(selectedIndex: args.pointIndex),
+                        ),
+                      );
+                    }
+                  //},
                 ),
               ),
             );

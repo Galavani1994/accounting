@@ -10,9 +10,9 @@ import 'SaleEdit.dart';
 import 'SaleService.dart';
 
 class SaleList extends StatefulWidget {
-  Customer customer;
+  int customerId;
 
-  SaleList(this.customer);
+  SaleList(this.customerId);
 
   @override
   State<SaleList> createState() => _SaleListState();
@@ -25,18 +25,25 @@ class _SaleListState extends State<SaleList> {
   late int creditor = 0;
   late int debtor = 0;
   var formatter = NumberFormat('#,###,000');
+  var customerFullName = '';
 
   @override
   Widget build(BuildContext context) {
     SaleService saleService = SaleService();
-    saleService.getDebtorTotalByPersonId(widget.customer.id).then((value) => {
+    saleService.getDebtorTotalByPersonId(widget.customerId).then((value) => {
           setState(() {
             debtor = value!;
           })
         });
-    saleService.getCreditorTotalByPersonId(widget.customer.id).then((value) => {
+    saleService.getCreditorTotalByPersonId(widget.customerId).then((value) => {
           setState(() {
             creditor = value!;
+          })
+        });
+
+    saleService.getCustomerFullNameById(widget.customerId).then((value) => {
+          setState(() {
+            customerFullName = value!;
           })
         });
 
@@ -54,11 +61,7 @@ class _SaleListState extends State<SaleList> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('صورتحساب' +
-            '  ' +
-            widget.customer.first_name +
-            ' ' +
-            widget.customer.last_name),
+        title: Text('صورتحساب ${customerFullName}'),
         centerTitle: true,
         backgroundColor: Colors.blue,
       ),
@@ -66,7 +69,7 @@ class _SaleListState extends State<SaleList> {
         height: MediaQuery.of(context).size.height - 270,
         child: Center(
           child: FutureBuilder<List<Sale>>(
-            future: saleService.fetchSales(widget.customer.id),
+            future: saleService.fetchSales(widget.customerId),
             builder:
                 (BuildContext context, AsyncSnapshot<List<Sale>> snapshot) {
               if (!snapshot.hasData) {
@@ -86,7 +89,7 @@ class _SaleListState extends State<SaleList> {
                         return Center(
                           child: Card(
                             child: ListTile(
-                              onLongPress: (){
+                              onLongPress: () {
                                 _showPopupMenu(context, sale);
                               },
                               onTap: () {
@@ -152,10 +155,19 @@ class _SaleListState extends State<SaleList> {
                                     ),
                                     Container(
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.end,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.end,
                                         children: [
-                                          Text(sale.createDate.toString()+' - '+(sale.creditor != null && sale.creditor == true ? 'بس' : 'بد') ,
-                                            style: TextStyle(fontFamily: "Vazir", fontSize: 14)),
+                                          Text(
+                                              sale.createDate.toString() +
+                                                  ' - ' +
+                                                  (sale.creditor != null &&
+                                                          sale.creditor == true
+                                                      ? 'بس'
+                                                      : 'بد'),
+                                              style: TextStyle(
+                                                  fontFamily: "Vazir",
+                                                  fontSize: 14)),
                                           Text(
                                             " تعداد : " +
                                                 (sale.quantity == null
@@ -264,7 +276,7 @@ class _SaleListState extends State<SaleList> {
 
   void _showPopupMenu(BuildContext context, Sale sale) async {
     final RenderBox overlay =
-    Overlay.of(context)!.context.findRenderObject() as RenderBox;
+        Overlay.of(context)!.context.findRenderObject() as RenderBox;
     final RelativeRect position = RelativeRect.fromRect(
       Rect.fromPoints(
         Offset(10, MediaQuery.of(context).size.height),
@@ -285,7 +297,9 @@ class _SaleListState extends State<SaleList> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => SaleEdit(entity: sale,),
+                    builder: (context) => SaleEdit(
+                      entity: sale,
+                    ),
                   ),
                 );
               },
