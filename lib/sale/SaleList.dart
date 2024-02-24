@@ -1,5 +1,5 @@
 import 'package:accounting/customer/Customer.dart';
-import 'package:accounting/product/Product.dart';
+import 'package:accounting/sale/Add.dart';
 import 'package:accounting/sale/SaleDetail.dart';
 import 'package:accounting/sale/sale.dart';
 import 'package:flutter/material.dart';
@@ -86,6 +86,9 @@ class _SaleListState extends State<SaleList> {
                         return Center(
                           child: Card(
                             child: ListTile(
+                              onLongPress: (){
+                                _showPopupMenu(context, sale);
+                              },
                               onTap: () {
                                 showDialog(
                                     context: context,
@@ -256,6 +259,40 @@ class _SaleListState extends State<SaleList> {
           borderRadius: BorderRadius.circular(2),
         ),
       ),
+    );
+  }
+
+  void _showPopupMenu(BuildContext context, Sale sale) async {
+    final RenderBox overlay =
+    Overlay.of(context)!.context.findRenderObject() as RenderBox;
+    final RelativeRect position = RelativeRect.fromRect(
+      Rect.fromPoints(
+        Offset(10, MediaQuery.of(context).size.height),
+        Offset(10, MediaQuery.of(context).size.height),
+      ),
+      Rect.fromLTRB(0, 0, overlay.size.width, overlay.size.height),
+    );
+    await showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            ListTile(
+              leading: Icon(Icons.edit),
+              title: Text('ویرایش'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SaleEdit(entity: sale,),
+                  ),
+                );
+              },
+            )
+          ],
+        );
+      },
     );
   }
 }

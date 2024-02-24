@@ -167,7 +167,7 @@ class _AddState extends State<Add> {
                           "-" +
                           item.last_name,
                       child: Text(
-                        item.first_name,
+                        item.first_name+" "+item.last_name,
                         style: const TextStyle(fontSize: 14),
                       ),
                     ))

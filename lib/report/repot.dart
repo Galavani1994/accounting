@@ -41,11 +41,19 @@ class Report extends StatelessWidget {
                         isVisible: true,
                         labelPosition: ChartDataLabelPosition.inside,
                       ),
+                      selectionBehavior: SelectionBehavior(enable: true),
                       // Set different colors for debtor and creditor slices
                       pointColorMapper: (data, _) =>
-                      data.category.contains('بدهکار') ? Colors.deepPurple : Colors.lime[900],
+                          data.category.contains('بدهکار')
+                              ? Colors.deepPurple
+                              : Colors.lime[900],
                     ),
                   ],
+                  onSelectionChanged: (selectionArgs) {
+                    // Handle debtor selection, you can navigate to another screen or perform any action
+                    // For now, just printing a message
+                    print('Debtor selected, show debtor customers ${selectionArgs.pointIndex}');
+                  },
                 ),
               ),
             );
@@ -68,9 +76,9 @@ class Report extends StatelessWidget {
 
   List<ExpenseData> getExpenseData(int debtor, int creditor) {
     return [
-      ExpenseData('بستانکار: ${formatter.format(creditor)}', creditor.toDouble()),
+      ExpenseData(
+          'بستانکار: ${formatter.format(creditor)}', creditor.toDouble()),
       ExpenseData('بدهکار : ${formatter.format(debtor)}', debtor.toDouble()),
-
     ];
   }
 }

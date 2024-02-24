@@ -190,13 +190,13 @@ class SaleService {
   Future<String?> getProductNameById(int? productId) async {
     DatabaseHelper helper = DatabaseHelper();
     final db = await helper.init();
-    String query = "select fullName from PRODUCT where id=?";
+    String query = "select title from PRODUCT where id=?";
 
     var res = await db.rawQuery(query, [productId.toString()]);
     String? result = "";
     List.generate(res.length, (i) {
-      if (res[i]["fullName"] != null) {
-        result = res[i]["fullName"].toString();
+      if (res[i]["title"] != null) {
+        result = res[i]["title"].toString();
       }
     });
     return result;
