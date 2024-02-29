@@ -33,7 +33,7 @@ class DatabaseHelper {
             await openDatabase(path, version: 12, onCreate: _onCreate);
 
         String folderName = 'acc_back';
-        Directory customFolder = Directory("storage/emulated/0/$folderName");
+        Directory customFolder = Directory("storage/emulated/0/hesabDaftari/$folderName");
         await customFolder.create(recursive: true);
 
         DateTime now = DateTime.now();
