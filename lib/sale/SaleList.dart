@@ -330,119 +330,93 @@ class _SaleListState extends State<SaleList> {
   }
 
   Future<void> generatePdf(
-      Future<List<Sale>> salesFuture,
-      String customerFullName,
-      String creditor,
-      String debtor,
-      int total) async {
-    List<Sale> sales = await salesFuture;
-    String folderName = 'sale-report-file';
-    Directory customFolder =
+    Future<List<Sale>> salesFuture,
+    String customerFullName,
+    String creditor,
+    String debtor,
+    int total,
+  ) async {
+    final List<Sale> sales = await salesFuture;
+
+    final String folderName = 'sale-report-file';
+    final Directory customFolder =
         Directory("storage/emulated/0/hesabDaftari/$folderName");
     if (!customFolder.existsSync()) {
       customFolder.createSync(recursive: true);
     }
+
     final font = await rootBundle.load("fonts/Vazirmatn-Medium.ttf");
-    pw.Font ttf = pw.Font.ttf(font);
-    // Create the PDF document.
+    final pw.Font ttf = pw.Font.ttf(font);
+
     final pdf = pw.Document();
+
     pdf.addPage(
       pw.Page(
         theme: pw.ThemeData.withFont(base: ttf),
-        build: (pw.Context context) {
-          return pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.start,
-            children: [
-              // Directionality for right-to-left text
-              pw.Directionality(
-                textDirection: pw.TextDirection.rtl,
-                child: pw.Container(
-                  decoration: pw.BoxDecoration(border: pw.Border.all(width: 1)),
-                  child: pw.Row(
-                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                    children: [
-                      pw.Container(
-                        width: 35, // Adjust width as needed
-                        padding: pw.EdgeInsets.all(5),
-                        child: pw.Text(
-                          'ردیف',
-                          style: pw.TextStyle(
-                              fontWeight: pw.FontWeight.normal, font: ttf),
-                        ),
-                      ),
-                      _buildHeaderCell('عنوان', ttf),
-                      _buildHeaderCell('مقدار', ttf),
-                      _buildHeaderCell('قیمت', ttf),
-                      _buildHeaderCell('تخفیف', ttf),
-                      _buildHeaderCell('پرداختی', ttf),
-                      _buildHeaderCell('جمع', ttf),
-                    ],
-                  ),
-                ),
-              ),
-              // Sales Data
-              ...sales.asMap().entries.map((entry) {
-                int index = entry.key;
-                var sale = entry.value;
-                return pw.Container(
-                  decoration: pw.BoxDecoration(border: pw.Border.all(width: 1)),
-                  child: pw.Directionality(
-                    textDirection: pw.TextDirection.rtl,
-                    child: pw.Row(
-                      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                      children: [
-                        pw.Container(
-                          width: 35, // Adjust width as needed
-                          padding: pw.EdgeInsets.all(5),
-                          child: pw.Text('${index + 1}'),
-                        ),
-                        _buildCell('${sale.product_title}'),
-                        _buildCell('${sale.quantity}'),
-                        _buildCell('${formatter.format(sale.price)}'),
-                        _buildCell('${formatter.format(sale.discount)}'),
-                        _buildCell('${formatter.format(sale.payment)}'),
-                        _buildCell(
-                            '${formatter.format(int.parse(sale.total!))}'),
-                      ],
-                    ),
-                  ),
-                );
-              }).toList(),
-              // Footer
-              pw.Directionality(
-                textDirection: pw.TextDirection.rtl,
-                child: pw.Row(
-                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                  children: [
-                    pw.Text('مانده بدهی: ${debtor}'),
-                    pw.Text('مانده بستانکار : ${creditor}'),
-                  ],
-                ),
-              ),
-              pw.Directionality(
-                  textDirection: pw.TextDirection.rtl,
-                  child: pw.Row(
-                      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                      children: [
-                        pw.Text(' جمع کل : ${formatter.format(total.abs())}')
-                      ]))
-            ],
-          );
-        },
+        build: (pw.Context context) =>
+            _buildPageContent(sales, ttf, debtor, creditor, total),
       ),
     );
 
-// Helper function to build header cell with a width
-
-    // Save the PDF to a file.
     final String filePath = '${customFolder.path}/${customerFullName}.pdf';
     final File file = File(filePath);
     await file.writeAsBytes(await pdf.save());
   }
 
-  pw.Widget _buildHeaderCell(String text, pw.Font fnt) {
+  pw.Widget _buildPageContent(
+    List<Sale> sales,
+    pw.Font ttf,
+    String debtor,
+    String creditor,
+    int total,
+  ) {
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.center,
+      children: [
+        pw.Directionality(
+            textDirection: pw.TextDirection.rtl, child: _buildHeaderRow(ttf)),
+        ...sales.asMap().entries.map((entry) {
+          final index = entry.key;
+          final sale = entry.value;
+          return pw.Directionality(
+              textDirection: pw.TextDirection.rtl,
+              child: _buildDataRow(index, sale));
+        }).toList(),
+
+        pw.Directionality(
+            textDirection: pw.TextDirection.rtl,
+            child: _buildFooterRow(debtor, creditor, formatter, total)),
+        pw.Directionality(
+            textDirection: pw.TextDirection.rtl,
+            child: pw.Row(
+              mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+              children: [
+                pw.Text('جمع کل : ${formatter.format(total.abs())}'),
+              ],
+            ))
+      ],
+    );
+  }
+
+  pw.Row _buildHeaderRow(pw.Font ttf) {
+    return pw.Row(
+      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+      children: [
+        _buildHeaderCell('ردیف', ttf, 35),
+        _buildHeaderCell('عنوان', ttf, 80),
+        _buildHeaderCell('مقدار', ttf, 45),
+        _buildHeaderCell('قیمت', ttf, 60),
+        _buildHeaderCell('تخفیف', ttf, 55),
+        _buildHeaderCell('پرداختی', ttf, 60),
+        _buildHeaderCell('جمع', ttf, 60),
+      ],
+    );
+  }
+
+  pw.Container _buildHeaderCell(String text, pw.Font fnt, double width) {
     return pw.Container(
-      width: 60, // Adjust width as needed
+      decoration: pw.BoxDecoration(border: pw.Border.all(width: 1)),
+      width: width,
       padding: pw.EdgeInsets.all(5),
       child: pw.Text(
         text,
@@ -451,12 +425,44 @@ class _SaleListState extends State<SaleList> {
     );
   }
 
-// Helper function to build cell with a width
-  pw.Widget _buildCell(String text) {
+  pw.Container _buildDataRow(int index, Sale sale) {
     return pw.Container(
-      width: 60, // Adjust width as needed
+      decoration: pw.BoxDecoration(border: pw.Border.all(width: 1)),
+      child: pw.Row(
+        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+        children: [
+          _buildCell('${index + 1}', 35),
+          _buildCell('${sale.product_title}', 80),
+          _buildCell('${sale.quantity}', 45),
+          _buildCell('${formatter.format(sale.price)}', 60),
+          _buildCell('${formatter.format(sale.discount)}', 55),
+          _buildCell('${formatter.format(sale.payment)}', 60),
+          _buildCell('${formatter.format(int.parse(sale.total!))}', 60),
+        ],
+      ),
+    );
+  }
+
+  pw.Container _buildCell(String text, double width) {
+    return pw.Container(
+      width: width,
       padding: pw.EdgeInsets.all(5),
       child: pw.Text(text),
+    );
+  }
+
+  pw.Row _buildFooterRow(
+    String debtor,
+    String creditor,
+    NumberFormat formatter,
+    int total,
+  ) {
+    return pw.Row(
+      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+      children: [
+        pw.Text('مانده بدهی: $debtor'),
+        pw.Text('مانده بستانکار : $creditor'),
+      ],
     );
   }
 }
