@@ -389,6 +389,13 @@ class _SaleListState extends State<SaleList> {
     final String filePath = '${customFolder.path}/${customerFullName}.pdf';
     final File file = File(filePath);
     await file.writeAsBytes(await pdf.save());
+
+    QuickAlert.show(
+      title: "",
+      text: "صورت حساب در مسیر \n ${filePath}\n ذخیره شد ",
+      type: QuickAlertType.success,
+      context: context,
+    );
   }
 
   pw.Widget _buildPageContent(List<Sale> sales,
@@ -431,24 +438,24 @@ class _SaleListState extends State<SaleList> {
     );
   }
 
-  pw.Row _buildHeaderRow(pw.Font ttf) {
-    return pw.Row(
-      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-      children: [
-        _buildHeaderCell('ردیف', ttf, 35),
-        _buildHeaderCell('عنوان', ttf, 80),
-        _buildHeaderCell('مقدار', ttf, 45),
-        _buildHeaderCell('قیمت', ttf, 60),
-        _buildHeaderCell('تخفیف', ttf, 55),
-        _buildHeaderCell('پرداختی', ttf, 60),
-        _buildHeaderCell('جمع', ttf, 60),
-      ],
+  pw.Container _buildHeaderRow(pw.Font ttf) {
+    return pw.Container(
+      decoration: pw.BoxDecoration(border: pw.Border.all(width: 1),color: PdfColors.amber200),
+      child: pw.Row(
+        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+        children: [
+          _buildHeaderCell('ردیف', ttf, 35),
+          _buildHeaderCell('عنوان', ttf, 80),
+          _buildHeaderCell('مشخصات', ttf, 100),
+          _buildHeaderCell('پرداختی', ttf, 60),
+          _buildHeaderCell('تاریخ', ttf, 75),
+        ],
+      )
     );
   }
 
   pw.Container _buildHeaderCell(String text, pw.Font fnt, double width) {
     return pw.Container(
-      decoration: pw.BoxDecoration(border: pw.Border.all(width: 1)),
       width: width,
       padding: pw.EdgeInsets.all(5),
       child: pw.Text(
@@ -466,11 +473,9 @@ class _SaleListState extends State<SaleList> {
         children: [
           _buildCell('$index', 35), // Display index
           _buildCell('${(sale.product_title==null || sale.product_title=='')? 'شناسه ${sale.product_id}':sale.product_title}', 80),
-          _buildCell('${sale.quantity}', 45),
-          _buildCell('${formatter.format(sale.price)}', 60),
-          _buildCell('${formatter.format(sale.discount)}', 55),
-          _buildCell('${formatter.format(sale.payment)}', 60),
-          _buildCell('${formatter.format(int.parse(sale.total!))}', 60),
+          _buildCell('مقدار : ${sale.quantity} \n قیمت : ${formatter.format(sale.price)}\nتخفیف : ${formatter.format(sale.discount)}\nجمع : ${formatter.format(int.parse(sale.total!))}', 100),
+          _buildCell('${formatter.format(sale.payment!)}', 60),
+          _buildCell('${sale.createDate!}', 75),
         ],
       ),
     );
